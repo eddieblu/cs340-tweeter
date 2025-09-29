@@ -13,7 +13,8 @@ const OAuth = () => {
             "text-white bg-primary"
         );
     };
-
+    
+    // TODO: remove duplication code for buttons
     return (
         <div className="text-center mb-3">
             <button
