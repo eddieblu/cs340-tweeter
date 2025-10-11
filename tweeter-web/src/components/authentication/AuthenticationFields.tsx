@@ -2,7 +2,7 @@ import { KeyboardEventHandler } from "react";
 
 interface Props {
     onSubmit: () => void;
-    isSubmitDisabled: () => boolean;
+    isSubmitDisabled: boolean;
     setAlias: (alias: string) => void;
     setPassword: (password: string) => void;
 }
@@ -10,7 +10,7 @@ interface Props {
 const AuthenticationFields = (props: Props) => {
 
     const onEnter = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key == "Enter" && !props.isSubmitDisabled()) {
+    if (event.key == "Enter" && !props.isSubmitDisabled) {
       props.onSubmit();
     }
   };

@@ -29,13 +29,14 @@ const Login = (props: Props) => {
     updateUserInfo
   }
   const presenterRef = useRef<LoginPresenter | null>(null);
-      if (!presenterRef.current) {
-          presenterRef.current = new LoginPresenter(listener);
-      }
+  if (!presenterRef.current) {
+    presenterRef.current = new LoginPresenter(listener);
+  }
 
   const checkSubmitButtonStatus = (): boolean => {
     return !alias || !password;
   };
+  const isSubmitDisabled = checkSubmitButtonStatus();
 
   const doLogin = async () => {
     await presenterRef.current!.doLogin(alias, password, rememberMe);
@@ -44,7 +45,7 @@ const Login = (props: Props) => {
   const inputFieldFactory = () => (
     <AuthenticationFields
       onSubmit={doLogin}
-      isSubmitDisabled={checkSubmitButtonStatus}
+      isSubmitDisabled={isSubmitDisabled}
       setAlias={setAlias}
       setPassword={setPassword} />
   );
@@ -65,7 +66,7 @@ const Login = (props: Props) => {
       inputFieldFactory={inputFieldFactory}
       switchAuthenticationMethodFactory={switchAuthenticationMethodFactory}
       setRememberMe={setRememberMe}
-      submitButtonDisabled={checkSubmitButtonStatus}
+      isSubmitDisabled={isSubmitDisabled}
       isLoading={isLoading}
       submit={doLogin}
     />

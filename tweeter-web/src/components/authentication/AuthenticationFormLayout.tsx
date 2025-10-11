@@ -7,7 +7,7 @@ interface Props {
   inputFieldFactory: () => JSX.Element;
   switchAuthenticationMethodFactory: () => JSX.Element;
   setRememberMe: (value: boolean) => void;
-  submitButtonDisabled: () => boolean;
+  isSubmitDisabled: boolean;
   isLoading: boolean;
   submit: () => void;
 }
@@ -51,7 +51,7 @@ const AuthenticationFormLayout = (props: Props) => {
             id="submitButton"
             className="w-100 btn btn-lg btn-primary"
             type="button"
-            disabled={props.submitButtonDisabled()}
+            disabled={props.isSubmitDisabled}
             onClick={() => props.submit()}
           >
             {props.isLoading ? (
