@@ -8,4 +8,5 @@ export class UserService {
         // TODO: Replace with the result of calling server
         return FakeData.instance.findUserByAlias(alias);
     };
+    
 }

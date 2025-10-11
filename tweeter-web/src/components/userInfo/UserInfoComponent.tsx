@@ -25,7 +25,7 @@ const UserInfo = () => {
     displayInfoMessage,
     deleteMessage,
     setDisplayedUser,
-    navigateToUserPage: (currentUserAlias) => navigate(`${getBaseUrl()}/${currentUserAlias}`),
+    navigate: (currentUserAlias) => navigate(`${getBaseUrl()}/${currentUserAlias}`),
     setIsLoading,
   }
 

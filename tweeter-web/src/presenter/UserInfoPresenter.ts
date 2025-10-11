@@ -1,5 +1,6 @@
-import { AuthToken, User, FakeData } from "tweeter-shared";
+import { AuthToken, User } from "tweeter-shared";
 import { FollowService } from "../model.service/FollowService";
+import { UserService } from "../model.service/UserService";
 
 
 export interface UserInfoView {
@@ -7,22 +8,24 @@ export interface UserInfoView {
     displayInfoMessage: (message: string, duration: number, bootstrapClasses?: string | undefined) => string;
     deleteMessage: (messageId: string) => void;
     setDisplayedUser: (user: User) => void;
-    navigateToUserPage: (user: string) => void;
+    navigate: (user: string) => void;
     setIsLoading: (value: boolean) => void;
 }
 
 export class UserInfoPresenter {
     private view: UserInfoView;
     private service: FollowService;
+    private userService: UserService;
 
     private _isFollower = false;
-    private _followeeCount: number = 0;
-    private _followerCount: number = 0;
+    private _followeeCount = 0;
+    private _followerCount = 0;
 
 
     public constructor(view: UserInfoView) {
         this.view = view;
         this.service = new FollowService();
+        this.userService = new UserService();
     }
 
     public get isFollower() { return this._isFollower; }
@@ -69,7 +72,7 @@ export class UserInfoPresenter {
 
     public async switchToLoggedInUser(currentUser: User): Promise<void> {
         this.view.setDisplayedUser(currentUser!);
-        this.view.navigateToUserPage(currentUser.alias);
+        this.view.navigate(currentUser.alias);
     };
 
     public async followDisplayedUser(authToken: AuthToken, displayedUser: User): Promise<void> {
@@ -115,5 +118,32 @@ export class UserInfoPresenter {
         }
     };
 
+    public async navigateToUser(targetString: string, featurePath: string, authToken: AuthToken, displayedUser: User): Promise<void> {
+        try {
+            const alias = this.extractAlias(targetString);
 
+            const toUser = await this.userService.getUser(authToken!, alias!);
+
+            if (toUser) {
+                if (!toUser.equals(displayedUser!)) {
+                    this.view.setDisplayedUser(toUser);
+                    this.view.navigate(`${featurePath}/${toUser.alias}`);
+                }
+            }
+        } catch (error) {
+            this.view.displayErrorMessage(`Failed to get user because of exception: ${error}`,);
+        }
+    };
+
+    public extractAlias(value: string): string {
+        const index = value.indexOf("@");
+        return value.substring(index);
+    };
+
+    public async getUser(
+        authToken: AuthToken,
+        alias: string
+    ): Promise<User | null> {
+        return this.userService.getUser(authToken, alias);
+    };
 }
