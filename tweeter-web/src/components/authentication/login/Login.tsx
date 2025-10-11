@@ -28,6 +28,7 @@ const Login = (props: Props) => {
     setIsLoading,
     updateUserInfo
   }
+  
   const presenterRef = useRef<LoginPresenter | null>(null);
   if (!presenterRef.current) {
     presenterRef.current = new LoginPresenter(listener);

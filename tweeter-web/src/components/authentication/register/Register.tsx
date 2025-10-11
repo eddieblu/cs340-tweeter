@@ -1,9 +1,8 @@
 import "./Register.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
-import { AuthToken, FakeData, User } from "tweeter-shared";
 import { Buffer } from "buffer";
 import AuthenticationFields from "../AuthenticationFields";
 import { useMessageActions } from "../../toaster/MessageHooks";
@@ -31,9 +30,12 @@ const Register = () => {
     setIsLoading,
     updateUserInfo
   }
-  const presenter: RegisterPresenter = new RegisterPresenter(listener);
+  const presenterRef = useRef<RegisterPresenter | null>(null);
+    if (!presenterRef.current) {
+      presenterRef.current = new RegisterPresenter(listener);
+    }
 
-  const isSubmitDisabled = presenter.checkSubmitButtonStatus(
+  const isSubmitDisabled = presenterRef.current!.checkSubmitButtonStatus(
     firstName,
     lastName,
     alias,
@@ -75,7 +77,7 @@ const Register = () => {
       reader.readAsDataURL(file);
 
       // Set image file extension (and move to a separate method)
-      const fileExtension = presenter.getFileExtension(file);
+      const fileExtension = presenterRef.current!.getFileExtension(file);
       if (fileExtension) {
         setImageFileExtension(fileExtension);
       }
@@ -88,7 +90,7 @@ const Register = () => {
 
   // moved
   const doRegister = async () => {
-    presenter.doRegister(firstName, lastName, alias, password, imageBytes, imageFileExtension, rememberMe);
+    presenterRef.current!.doRegister(firstName, lastName, alias, password, imageBytes, imageFileExtension, rememberMe);
   };
 
   const inputFieldFactory = () => {
