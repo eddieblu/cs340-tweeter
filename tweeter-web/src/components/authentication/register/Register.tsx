@@ -30,10 +30,11 @@ const Register = () => {
     setIsLoading,
     updateUserInfo
   }
+  
   const presenterRef = useRef<RegisterPresenter | null>(null);
-    if (!presenterRef.current) {
-      presenterRef.current = new RegisterPresenter(listener);
-    }
+  if (!presenterRef.current) {
+    presenterRef.current = new RegisterPresenter(listener);
+  }
 
   const isSubmitDisabled = presenterRef.current!.checkSubmitButtonStatus(
     firstName,

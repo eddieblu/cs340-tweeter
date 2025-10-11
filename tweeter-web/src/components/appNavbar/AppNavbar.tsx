@@ -2,9 +2,10 @@ import "./AppNavbar.css";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Image from "react-bootstrap/Image";
-import { AuthToken } from "tweeter-shared";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserInfoHooks";
+import { AppNavbarPresenter, AppNavbarView } from "../../presenter/AppNavbarPresenter";
+import { useRef } from "react";
 
 const AppNavbar = () => {
   const location = useLocation();
@@ -13,24 +14,19 @@ const AppNavbar = () => {
   const navigate = useNavigate();
   const { displayInfoMessage, displayErrorMessage, deleteMessage } = useMessageActions();
 
-  const logOut = async () => {
-    const loggingOutToastId = displayInfoMessage("Logging Out...", 0);
+  const listener: AppNavbarView = {
+    displayErrorMessage,
+    displayInfoMessage,
+    deleteMessage,
+    clearUserInfo,
+    navigateToUrl: (url) => navigate(url),
+  }
 
-    try {
-      await logout(authToken!);
-
-      deleteMessage(loggingOutToastId);
-      clearUserInfo();
-      navigate("/login");
-    } catch (error) {
-      displayErrorMessage(`Failed to log user out because of exception: ${error}`);
-    }
-  };
-
-  const logout = async (authToken: AuthToken): Promise<void> => {
-    // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-    await new Promise((res) => setTimeout(res, 1000));
-  };
+  const presenter: AppNavbarPresenter = new AppNavbarPresenter(listener);
+  const presenterRef = useRef<AppNavbarPresenter | null>(null);
+  if (!presenterRef.current) {
+    presenterRef.current = new AppNavbarPresenter(listener);
+  }
 
   return (
     <Navbar
@@ -109,7 +105,7 @@ const AppNavbar = () => {
             <Nav.Item>
               <NavLink
                 id="logout"
-                onClick={logOut}
+                onClick={() => presenter.logOut(authToken!)}
                 to={location.pathname}
                 className={({ isActive }) =>
                   isActive ? "nav-link active" : "nav-link"
