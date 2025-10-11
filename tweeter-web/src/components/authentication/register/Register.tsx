@@ -8,6 +8,7 @@ import { Buffer } from "buffer";
 import AuthenticationFields from "../AuthenticationFields";
 import { useMessageActions } from "../../toaster/MessageHooks";
 import { useUserInfoActions } from "../../userInfo/UserInfoHooks";
+import { RegisterPresenter, RegisterView } from "../../../presenter/RegisterPresenter";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -23,6 +24,11 @@ const Register = () => {
   const navigate = useNavigate();
   const { updateUserInfo } = useUserInfoActions();
   const { displayErrorMessage } = useMessageActions();
+
+  const listener: RegisterView = {
+
+  }
+  const presenter: RegisterPresenter = new RegisterPresenter(listener);
 
   const checkSubmitButtonStatus = (): boolean => {
     return (
