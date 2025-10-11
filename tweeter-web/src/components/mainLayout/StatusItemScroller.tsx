@@ -1,4 +1,4 @@
-import { AuthToken, Status, User } from "tweeter-shared";
+import { Status } from "tweeter-shared";
 import { useState, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams } from "react-router-dom";
@@ -12,7 +12,6 @@ export const PAGE_SIZE = 10;
 interface Props {
     featureUrl: string;
     presenterFactory: (view: StatusItemView) => StatusItemPresenter;
-
 }
 
 const StatusItemScroller = (props: Props) => {
