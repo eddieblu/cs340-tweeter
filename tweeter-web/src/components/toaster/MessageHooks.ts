@@ -9,7 +9,6 @@ interface MessageActions {
     deleteAllMessages: () => void,
 }
 
-
 export const useMessageActions = (): MessageActions => {
     const { displayToast, deleteToast, deleteAllToasts } = useContext(ToastActionsContext);
     return {

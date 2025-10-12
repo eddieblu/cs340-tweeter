@@ -1,7 +1,6 @@
 import { useContext } from "react"
 import { UserInfoActionsContext, UserInfoContext } from "./UserInfoContexts"
 
-
 export const useUserInfoActions = () => {
     return useContext(UserInfoActionsContext);
 };
