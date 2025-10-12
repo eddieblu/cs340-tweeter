@@ -22,7 +22,6 @@ const AppNavbar = () => {
     navigateToUrl: (url) => navigate(url),
   }
 
-  const presenter: AppNavbarPresenter = new AppNavbarPresenter(listener);
   const presenterRef = useRef<AppNavbarPresenter | null>(null);
   if (!presenterRef.current) {
     presenterRef.current = new AppNavbarPresenter(listener);
@@ -105,7 +104,7 @@ const AppNavbar = () => {
             <Nav.Item>
               <NavLink
                 id="logout"
-                onClick={() => presenter.logOut(authToken!)}
+                onClick={() => presenterRef.current!.logOut(authToken!)}
                 to={location.pathname}
                 className={({ isActive }) =>
                   isActive ? "nav-link active" : "nav-link"
