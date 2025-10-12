@@ -16,9 +16,9 @@ export const useNavigateToUser = () => {
         displayErrorMessage,
         setDisplayedUser,
         navigate,
-        displayInfoMessage: () => "", // not needed
-        deleteMessage: () => { }, // not needed
-        setIsLoading: () => { }, // not needed
+        displayInfoMessage: () => "", // empty stub to reuse UserInfoPresenter because method not needed here
+        deleteMessage: () => { }, // ""
+        setIsLoading: () => { }, // ""
     }
 
     const presenterRef = useRef<UserInfoPresenter | null>(null);

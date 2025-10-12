@@ -29,7 +29,6 @@ const UserInfo = () => {
     setIsLoading,
   }
 
-
   const presenterRef = useRef<UserInfoPresenter | null>(null); 
   if (!presenterRef.current) {
     presenterRef.current = new UserInfoPresenter(listener);
