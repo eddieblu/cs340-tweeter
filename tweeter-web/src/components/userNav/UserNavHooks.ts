@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserInfoHooks";
-import { UserInfoPresenter, UserInfoView } from "../../presenter/UserInfoPresenter";
 import { useRef } from "react";
+import { UserNavPresenter, UserNavView } from "../../presenter/UserNavPresenter";
 
 
 export const useNavigateToUser = () => {
@@ -12,18 +12,15 @@ export const useNavigateToUser = () => {
 
     const navigate = useNavigate();
 
-    const listener: UserInfoView = {
+    const listener: UserNavView = {
         displayErrorMessage,
         setDisplayedUser,
         navigate,
-        displayInfoMessage: () => "", // empty stub to reuse UserInfoPresenter 
-        deleteMessage: () => { }, // ""
-        setIsLoading: () => { }, // ""
     }
 
-    const presenterRef = useRef<UserInfoPresenter | null>(null);
+    const presenterRef = useRef<UserNavPresenter | null>(null);
     if (!presenterRef.current) {
-        presenterRef.current = new UserInfoPresenter(listener);
+        presenterRef.current = new UserNavPresenter(listener);
     }
 
     const navigateToUser = async (event: React.MouseEvent, featurePath: string): Promise<void> => {

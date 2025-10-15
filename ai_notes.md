@@ -19,3 +19,8 @@ ChatGPT
 - AND MORE...
 
 Summary of use for this milestone: I tried to use AI to do more for me at the beginning, but had a hard time pointing the model in the right direction, so I worked it out myself and then went to AI for verifying/clarifying questions and help debugging. I also used AI to learn the MVP architecture pattern more and more, like how interfaces work as the views and how to leave React UI logic in the component when it seems needed in the presenter. 
+
+## Milestone 2B
+
+ChatGPT 
+- 
