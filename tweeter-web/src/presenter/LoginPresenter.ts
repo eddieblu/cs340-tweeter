@@ -1,42 +1,42 @@
 import { User, AuthToken } from "tweeter-shared";
-import { UserService } from "../model.service/UserService";
+import { UserService } from "../model/service/UserService";
+import { Presenter, View } from "./Presenter";
 
-export interface LoginView {
-    displayErrorMessage: (message: string, bootstrapClasses?: string,) => string,
-    navigateToUrl: (url: string) => void;
-    setIsLoading: (value: boolean) => void;
-    updateUserInfo: (currentUser: User, displayedUser: User | null, authToken: AuthToken, remember: boolean) => void;
-};
+export interface LoginView extends View {
+  navigateToUrl: (url: string) => void;
+  setIsLoading: (value: boolean) => void;
+  updateUserInfo: (
+    currentUser: User,
+    displayedUser: User | null,
+    authToken: AuthToken,
+    remember: boolean
+  ) => void;
+}
 
-export class LoginPresenter {
-    private view: LoginView;
-    private service: UserService;
+export class LoginPresenter extends Presenter<LoginView> {
+  private service: UserService= new UserService();
 
-    constructor(view: LoginView) {
-        this.view = view;
-        this.service = new UserService();
-    };
+  public async doLogin(
+    alias: string,
+    password: string,
+    rememberMe: boolean,
+    originalUrl?: string
+  ): Promise<void> {
+    await this.doFailureReportingOperation(
+      async () => {
+        this.view.setIsLoading(true);
 
-    public async doLogin(
-        alias: string,
-        password: string,
-        rememberMe: boolean,
-        originalUrl?: string
-    ): Promise<void> {
-        try {
-            this.view.setIsLoading(true);
+        const [user, authToken] = await this.service.login(alias, password);
 
-            const [user, authToken] = await this.service.login(alias, password);
+        this.view.updateUserInfo(user, user, authToken, rememberMe);
 
-            this.view.updateUserInfo(user, user, authToken, rememberMe);
-
-            const url = originalUrl ? originalUrl : `/feed/${user.alias}`;
-            this.view.navigateToUrl(url);
-
-        } catch (error) {
-            this.view.displayErrorMessage(`Failed to log user in because of exception: ${error}`,);
-        } finally {
-            this.view.setIsLoading(false);
-        }
-    };
-};
+        const url = originalUrl ? originalUrl : `/feed/${user.alias}`;
+        this.view.navigateToUrl(url);
+      },
+      "log user in",
+      () => {
+        this.view.setIsLoading(false);
+      }
+    );
+  }
+}

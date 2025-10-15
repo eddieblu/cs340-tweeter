@@ -23,4 +23,4 @@ Summary of use for this milestone: I tried to use AI to do more for me at the be
 ## Milestone 2B
 
 ChatGPT 
-- 
+- how to add finally to the demo try-catch abstraction 
