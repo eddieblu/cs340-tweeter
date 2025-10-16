@@ -1,3 +1,5 @@
+import { AuthToken, User } from "tweeter-shared";
+
 export interface View {
   displayErrorMessage: (message: string) => void;
 }
@@ -7,11 +9,16 @@ export interface MessageView extends View {
   deleteMessage: (messageId: string) => void;
 }
 
+
 export abstract class Presenter<V extends View> {
   private _view: V;
 
   public constructor(view: V) {
     this._view = view;
+  }
+
+  protected get view() {
+    return this._view;
   }
 
   protected async doFailureReportingOperation(
@@ -28,9 +35,5 @@ export abstract class Presenter<V extends View> {
     } finally {
       if (finallyOperation) finallyOperation();
     }
-  }
-
-  protected get view() {
-    return this._view;
   }
 }
