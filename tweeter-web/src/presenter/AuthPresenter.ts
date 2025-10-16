@@ -20,7 +20,7 @@ export class AuthPresenter<V extends AuthView> extends Presenter<V> {
     return this._service;
   }
   
-  protected async handleSuccessfulAuthOperation(
+  protected async doAuthOperation(
     operation: () => Promise<[User, AuthToken]>,
     rememberMe: boolean,
     operationDescription: string,

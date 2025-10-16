@@ -71,7 +71,7 @@ export class RegisterPresenter extends AuthPresenter<RegisterView> {
     imageFileExtension: string,
     rememberMe: boolean
   ) {
-    await this.handleSuccessfulAuthOperation(
+    await this.doAuthOperation(
       () =>
         this.service.register(
           firstName,
