@@ -85,18 +85,3 @@ const UserItemScroller = (props: Props) => {
 };
 
 export default UserItemScroller;
-
-// notes
-// in model view presenter, each view only has one presenter
-// presenter is like the brain for the component
-// presenters can reference multiple services but views shouldn't reference multiple presenters
-
-//  notes for const listener: UserItemView = {
-// this function will be able to access the elements of this component
-// the same as implementing the interface as if this were a class
-// make the views as dumb as possible and pass it all off to the presenter
-// the function is the view so this object is a listener
-
-// notes for useRef
-// has one of the properties of useState
-// a var you create with useRef won't use its value when you re-render but won't trigger a re-render

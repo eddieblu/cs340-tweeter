@@ -10,6 +10,9 @@ import { PagedItemView } from "../../presenter/PagedItemPresenter";
 
 export const PAGE_SIZE = 10;
 
+// TODO: statusitemscroller and useritemscroller 
+
+
 interface Props {
     featureUrl: string;
     presenterFactory: (view: PagedItemView<Status>) => StatusItemPresenter;
@@ -87,6 +90,3 @@ const StatusItemScroller = (props: Props) => {
 };
 
 export default StatusItemScroller;
-
-// notes
-// make the view as dumb as possible and delegate everything to the presenter 
