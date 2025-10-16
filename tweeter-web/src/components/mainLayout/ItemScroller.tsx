@@ -1,19 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { User } from "tweeter-shared";
 import { useParams } from "react-router-dom";
-import UserItem from "../userItem/UserItem";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserInfoHooks";
-import { UserItemPresenter } from "../../presenter/UserItemPresenter";
 import {
   PagedItemPresenter,
   PagedItemView,
 } from "../../presenter/PagedItemPresenter";
 
+/**
+ * Generic item scroller that handles paged presenters (users or statuses).
+ *
+ * @template T The item type (User or Status)
+ * @template P The presenter type (extends a PagedItemPresenter)
+ */
 interface Props<T, P extends PagedItemPresenter<T, any>> {
   featureUrl: string;
-  presenterFactory: (view: PagedItemView<User>) => UserItemPresenter;
+  presenterFactory: (view: PagedItemView<T>) => P;
   itemFactory: (item: T, featureUrl: string) => JSX.Element;
 }
 
@@ -21,22 +24,23 @@ export function ItemScroller<T, P extends PagedItemPresenter<T, any>>(
   props: Props<T, P>
 ) {
   const { displayErrorMessage } = useMessageActions();
-  const [items, setItems] = useState<User[]>([]);
+  const [items, setItems] = useState<T[]>([]);
 
   const { displayedUser, authToken } = useUserInfo();
   const { setDisplayedUser } = useUserInfoActions();
   const { displayedUser: displayedUserAliasParam } = useParams();
 
-  const listener: PagedItemView<User> = {
-    addItems: (newItems: User[]) =>
+  const listener: PagedItemView<T> = {
+    addItems: (newItems: T[]) =>
       setItems((previousItems) => [...previousItems, ...newItems]),
-    displayErrorMessage: displayErrorMessage,
+    displayErrorMessage,
   };
 
-  const presenterRef = useRef<UserItemPresenter | null>(null);
+  const presenterRef = useRef<P | null>(null);
   if (!presenterRef.current) {
     presenterRef.current = props.presenterFactory(listener);
   }
+
   // Update the displayed user context variable whenever the displayedUser url parameter changes.
   // This allows browser forward and back buttons to work correctly.
   useEffect(() => {
@@ -84,12 +88,10 @@ export function ItemScroller<T, P extends PagedItemPresenter<T, any>>(
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <UserItem user={item} featurePath={props.featureUrl} />
+            {props.itemFactory(item, props.featureUrl)}
           </div>
         ))}
       </InfiniteScroll>
     </div>
   );
 }
-
-export default UserItemScroller;
