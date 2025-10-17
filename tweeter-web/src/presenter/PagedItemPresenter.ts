@@ -59,13 +59,6 @@ export abstract class PagedItemPresenter<T, U extends Service> extends Presenter
     await this.doFailureReportingOperation(async () => {
       const [newItems, hasMore] = await this.getMoreItems(authToken, userAlias);
         
-    //   const [newItems, hasMore] = await this.service.loadMoreFollowees(
-    //     authToken,
-    //     userAlias,
-    //     PAGE_SIZE,
-    //     this.lastItem
-    //   );
-
       this.hasMoreItems = hasMore;
       this.lastItem =
         newItems.length > 0 ? newItems[newItems.length - 1] : null;
