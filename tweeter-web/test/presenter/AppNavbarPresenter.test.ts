@@ -13,18 +13,19 @@ import {
   when,
 } from "@typestrong/ts-mockito";
 import { UserService } from "../../src/model/service/UserService";
-
 describe("AppNavbarPresenter", () => {
   let mockAppNavbarView: AppNavbarView;
   let appNavbarPresenter: AppNavbarPresenter;
   let mockService: UserService;
 
-  const authToken = new AuthToken("abc123", Date.now());
+  const authToken = new AuthToken("auth-token", Date.now());
 
   beforeEach(() => {
     mockAppNavbarView = mock<AppNavbarView>();
     const mockAppNavbarViewInstance = instance(mockAppNavbarView);
-    when(mockAppNavbarView.displayInfoMessage(anything(), 0)).thenReturn("messageId123");
+    when(mockAppNavbarView.displayInfoMessage(anything(), 0)).thenReturn(
+      "messageId123"
+    );
 
     const appNavbarPresenterSpy = spy(
       new AppNavbarPresenter(mockAppNavbarViewInstance)
@@ -50,18 +51,22 @@ describe("AppNavbarPresenter", () => {
   });
 
   /* Correct Behaviour: Logging Out Successful */
-  it("tells the view to clear the info message that was displayed previously, clears the user info, and navigates to the login page when successful", async () => {
-    await appNavbarPresenter.logOut(authToken);
+  it(
+    "on success: tells the view to clear the info message that was displayed previously," +
+      "clears the user info, and navigates to the login page",
+    async () => {
+      await appNavbarPresenter.logOut(authToken);
 
-    verify(mockAppNavbarView.deleteMessage("messageId123")).once();
-    verify(mockAppNavbarView.clearUserInfo()).once();
-    verify(mockAppNavbarView.navigateToUrl("/login")).once();
+      verify(mockAppNavbarView.deleteMessage("messageId123")).once();
+      verify(mockAppNavbarView.clearUserInfo()).once();
+      verify(mockAppNavbarView.navigateToUrl("/login")).once();
 
-    verify(mockAppNavbarView.displayErrorMessage(anything())).never();
-  });
+      verify(mockAppNavbarView.displayErrorMessage(anything())).never();
+    }
+  );
 
   /* Correct Behaviour: Logging Out Unsuccessful */
-  it("tells the view to display an error message when logout unsuccessful", async () => {
+  it("on failure: tells the view to display an error message when logout unsuccessful", async () => {
     let error = new Error("An error occured");
     when(mockService.logout(anything())).thenReject(error);
 
