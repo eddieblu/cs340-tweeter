@@ -3,7 +3,6 @@ import { UserService } from "../model/service/UserService";
 import { View, Presenter } from "./Presenter";
 
 export interface UserNavView extends View {
-  displayErrorMessage: (message: string) => void;
   setDisplayedUser: (user: User) => void;
   navigate: (user: string) => void;
 }
