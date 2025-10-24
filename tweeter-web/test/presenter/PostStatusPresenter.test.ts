@@ -28,7 +28,7 @@ describe("PostStatusPresenter", () => {
     const mockPostStatusViewInstance = instance(mockPostStatusView);
     when(mockPostStatusView.displayInfoMessage(anything(), 0)).thenReturn(
       "info-message"
-    ); // todo: used?
+    ); 
 
     const postStatusPresenterSpy = spy(
       new PostStatusPresenter(mockPostStatusViewInstance)
@@ -83,7 +83,7 @@ describe("PostStatusPresenter", () => {
         mockPostStatusView.displayInfoMessage("Status posted!", anything())
       ).once();
       verify(mockPostStatusView.setIsLoading(false)).once();
-      // Should not display an error
+
       verify(mockPostStatusView.displayErrorMessage(anything())).never();
     }
   );

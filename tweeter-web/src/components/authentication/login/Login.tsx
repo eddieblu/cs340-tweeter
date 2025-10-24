@@ -10,6 +10,10 @@ import { LoginView, LoginPresenter } from "../../../presenter/LoginPresenter";
 
 interface Props {
   originalUrl?: string;
+  presenter?: LoginPresenter; 
+  /*  presenter: LoginPresenter added for testing purposes; 
+      Now we need to make sure that a new presenter 
+      is not rendered if we pass in a presenter */
 }
 
 const Login = (props: Props) => {
@@ -26,12 +30,13 @@ const Login = (props: Props) => {
     displayErrorMessage,
     navigateToUrl: (url) => navigate(url),
     setIsLoading,
-    updateUserInfo
-  }
-  
+    updateUserInfo,
+  };
+
   const presenterRef = useRef<LoginPresenter | null>(null);
   if (!presenterRef.current) {
-    presenterRef.current = new LoginPresenter(listener);
+    /* this will use the passed in presenter if provided, otherwise it creates a new one */
+    presenterRef.current = props.presenter ?? new LoginPresenter(listener); 
   }
 
   const checkSubmitButtonStatus = (): boolean => {
@@ -48,7 +53,8 @@ const Login = (props: Props) => {
       onSubmit={doLogin}
       isSubmitDisabled={isSubmitDisabled}
       setAlias={setAlias}
-      setPassword={setPassword} />
+      setPassword={setPassword}
+    />
   );
 
   const switchAuthenticationMethodFactory = () => {
@@ -75,7 +81,6 @@ const Login = (props: Props) => {
 };
 
 export default Login;
-
 
 // notes
 // props is greyed out and says: 'props' is declared but its value is never read.
