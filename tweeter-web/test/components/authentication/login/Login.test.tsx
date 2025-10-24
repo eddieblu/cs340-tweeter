@@ -1,9 +1,7 @@
-import {
-  instance,
-  mock,
-  verify,
-} from "@typestrong/ts-mockito";
 import Login from "../../../../src/components/authentication/login/Login";
+import { LoginPresenter } from "../../../../src/presenter/LoginPresenter";
+
+import { instance, mock, verify } from "@typestrong/ts-mockito";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
@@ -11,17 +9,10 @@ import "@testing-library/jest-dom";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
-import { LoginPresenter } from "../../../../src/presenter/LoginPresenter";
 
 library.add(fab);
 
 describe("Login", () => {
-  // vars
-
-  beforeEach(() => {
-    // setup
-  });
-
   it("starts with the sign in button disabled", async () => {
     const { signInButton } = renderLoginAndGetElement("/");
     expect(signInButton).toBeDisabled();
@@ -82,6 +73,8 @@ describe("Login", () => {
   });
 });
 
+// helper functions
+
 function renderLogin(originalUrl: string, presenter?: LoginPresenter) {
   return render(
     <MemoryRouter>
@@ -108,7 +101,7 @@ function renderLoginAndGetElement(
   const aliasField = screen.getByLabelText("alias");
   const passwordField = screen.getByLabelText("password");
   const rememberMe = screen.getByRole("checkbox", { name: /remember me/i });
-    
+
   return { user, signInButton, aliasField, passwordField, rememberMe };
 }
 

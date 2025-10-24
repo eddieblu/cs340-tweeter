@@ -2,10 +2,18 @@ import "./PostStatus.css";
 import { useRef, useState } from "react";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo } from "../userInfo/UserInfoHooks";
-import { PostStatusPresenter, PostStatusView } from "../../presenter/PostStatusPresenter";
+import {
+  PostStatusPresenter,
+  PostStatusView,
+} from "../../presenter/PostStatusPresenter";
 
-const PostStatus = () => {
-  const { displayInfoMessage, displayErrorMessage, deleteMessage } = useMessageActions();
+interface Props {
+  presenter?: PostStatusPresenter; 
+}
+
+export const PostStatus = ({ presenter }: Props) => {
+  const { displayInfoMessage, displayErrorMessage, deleteMessage } =
+    useMessageActions();
 
   const { currentUser, authToken } = useUserInfo();
   const [post, setPost] = useState("");
@@ -17,11 +25,11 @@ const PostStatus = () => {
     deleteMessage,
     setIsLoading,
     setPost,
-  }
+  };
 
   const presenterRef = useRef<PostStatusPresenter | null>(null);
   if (!presenterRef.current) {
-    presenterRef.current = new PostStatusPresenter(listener);
+    presenterRef.current = presenter ?? new PostStatusPresenter(listener);
   }
 
   const submitPost = async (event: React.MouseEvent) => {
@@ -40,6 +48,7 @@ const PostStatus = () => {
         <textarea
           className="form-control"
           id="postStatusTextArea"
+          aria-label="Post status text"
           rows={10}
           placeholder="What's on your mind?"
           value={post}
@@ -53,7 +62,11 @@ const PostStatus = () => {
           id="postStatusButton"
           className="btn btn-md btn-primary me-1"
           type="button"
-          disabled={presenterRef.current!.isButtonDisabled(post, authToken!, currentUser!)}
+          disabled={presenterRef.current!.isButtonDisabled(
+            post,
+            authToken!,
+            currentUser!
+          )}
           style={{ width: "8em" }}
           onClick={submitPost}
         >
@@ -71,7 +84,11 @@ const PostStatus = () => {
           id="clearStatusButton"
           className="btn btn-md btn-secondary"
           type="button"
-          disabled={presenterRef.current!.isButtonDisabled(post, authToken!, currentUser!)}
+          disabled={presenterRef.current!.isButtonDisabled(
+            post,
+            authToken!,
+            currentUser!
+          )}
           onClick={clearPost}
         >
           Clear
