@@ -34,11 +34,4 @@ export class UserNavPresenter extends Presenter<UserNavView> {
     const index = value.indexOf("@");
     return value.substring(index);
   }
-
-  public async getUser(
-    authToken: AuthToken,
-    alias: string
-  ): Promise<User | null> {
-    return this.service.getUser(authToken, alias);
-  }
 }

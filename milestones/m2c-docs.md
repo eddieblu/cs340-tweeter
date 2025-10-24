@@ -32,7 +32,7 @@ User           useNavigateToUser (View)       UserNavPresenter          UserServ
  |                     |                            |----------------------->|
  |                     |                            |        return User     |
  |                     |                            |<-----------------------|
- |                     |                            | setDisplayedUser(toUser)
+ |                     |   setDisplayedUser(toUser) |                        |
  |                     |<---------------------------|                        |
  | update displayed UI |                            |                        |
  |-------------------->|                            |                        |
