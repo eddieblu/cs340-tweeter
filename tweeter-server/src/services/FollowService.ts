@@ -83,8 +83,3 @@ export class FollowService implements Service {
     return [followerCount, followeeCount];
   }
 }
-
-// notes
-// you can't define arrow functions inside of a class only inside a component
-
-// this service class is functionality related to who's following who
