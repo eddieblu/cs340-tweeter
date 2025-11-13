@@ -17,8 +17,10 @@
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
+    
     // Recommended Options
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "jsx": "react-jsx",
     "verbatimModuleSyntax": false,
