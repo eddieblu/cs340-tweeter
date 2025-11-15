@@ -1,11 +1,17 @@
 import { Buffer } from "buffer";
-import { AuthToken, User, FakeData, GetUserRequest } from "tweeter-shared";
+import {
+  AuthToken,
+  User,
+  FakeData,
+  GetUserRequest,
+  LoginRequest,
+} from "tweeter-shared";
 import { Service } from "./Service";
 import { ServerFacade } from "../../network/ServerFacade";
 
 export class UserService implements Service {
   private serverFacade = new ServerFacade();
-  
+
   public async getUser(
     authToken: AuthToken,
     alias: string
@@ -13,7 +19,7 @@ export class UserService implements Service {
     const request: GetUserRequest = {
       token: authToken.token,
       userAlias: alias,
-    }
+    };
 
     return this.serverFacade.getUser(request);
   }
@@ -22,14 +28,14 @@ export class UserService implements Service {
     alias: string,
     password: string
   ): Promise<[User, AuthToken]> {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    const request: LoginRequest = {
+      alias: alias,
+      password: password,
+    };
 
-    if (user === null) {
-      throw new Error("Invalid alias or password");
-    }
+    const [user, authToken] = await this.serverFacade.login(request);
 
-    return [user, FakeData.instance.authToken];
+    return [user, authToken];
   }
 
   public async register(

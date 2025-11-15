@@ -1,4 +1,5 @@
 import {
+  AuthToken,
   FollowRequest,
   FollowResponse,
   GetFollowCountRequest,
@@ -7,6 +8,8 @@ import {
   GetUserResponse,
   IsFollowerRequest,
   IsFollowerResponse,
+  LoginRequest,
+  LoginResponse,
   PagedItemRequest,
   PagedItemResponse,
   PostStatusRequest,
@@ -162,6 +165,29 @@ export class ServerFacade {
       console.error(response);
       throw new Error(response.message ?? "Failed to get user");
     }
+  }
+
+  public async login(request: LoginRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      LoginRequest,
+      LoginResponse
+    >(request, "/user/login");
+
+    if (!response.success) {
+      console.error(response);
+      throw new Error("Invalid alias or password");
+    }
+
+    const user = User.fromDto(response.user);
+    const authToken = AuthToken.fromDto(response.authToken);
+
+    if (!user || !authToken) {
+      throw new Error(
+        response.message ?? "Server returned invalid user or authtoken"
+      );
+    }
+
+    return [user, authToken];
   }
 
   //

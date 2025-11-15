@@ -30,12 +30,13 @@ export class UserService implements Service {
   ): Promise<[UserDto, AuthTokenDto]> {
     // TODO: Replace with the result of calling the server
     const user = FakeData.instance.firstUser;
+    const authtoken = FakeData.instance.authToken;
 
     if (user === null) {
       throw new Error("Invalid alias or password");
     }
 
-    return [user.dto, FakeData.instance.authToken];
+    return [user.dto, authtoken.dto];
   }
 
   /**
