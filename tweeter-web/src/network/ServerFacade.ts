@@ -1,4 +1,6 @@
 import {
+  GetFolloweeCountRequest,
+  GetFolloweeCountResponse,
   IsFollowerRequest,
   IsFollowerResponse,
   PagedUserItemRequest,
@@ -35,12 +37,36 @@ export class ServerFacade {
     >(request, "/follow/is-follower");
 
     if (response.success) {
-      return response.isFollower
+      return response.isFollower;
     } else {
       console.error(response);
-      throw new Error(response.message ?? "Failed to determine follower status");
+      throw new Error(
+        response.message ?? "Failed to determine follower status"
+      );
     }
   }
+
+  public async getFolloweeCount(
+    request: GetFolloweeCountRequest
+  ): Promise<number> {
+    const response = await this.clientCommunicator.doPost<
+      GetFolloweeCountRequest,
+      GetFolloweeCountResponse
+    >(request, "/followee/count");
+
+    if (response.success) {
+      return response.count;
+    } else {
+      console.error(response);
+      throw new Error(
+        response.message ?? "Failed to get followee count from server"
+      );
+    }
+  }
+
+  //
+  // Helpers
+  //
 
   private async getMoreUsersPaged(
     path: string,
@@ -68,5 +94,4 @@ export class ServerFacade {
       throw new Error(response.message ?? "Failed to get more " + itemType);
     }
   }
-
 }
