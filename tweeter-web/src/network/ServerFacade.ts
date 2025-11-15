@@ -1,4 +1,6 @@
 import {
+  FollowRequest,
+  FollowResponse,
   GetFollowCountRequest,
   GetFollowCountResponse,
   IsFollowerRequest,
@@ -46,12 +48,26 @@ export class ServerFacade {
     }
   }
 
-  public async getFolloweeCount(request: GetFollowCountRequest) {
+  async getFolloweeCount(request: GetFollowCountRequest) {
     return this.getFollowCount(request, "/followee/count");
   }
 
-  public async getFollowerCount(request: GetFollowCountRequest) {
+  async getFollowerCount(request: GetFollowCountRequest) {
     return this.getFollowCount(request, "/follower/count");
+  }
+
+  async follow(request: FollowRequest) {
+    const response = await this.clientCommunicator.doPost<
+      FollowRequest,
+      FollowResponse
+    >(request, "/follow/follow");
+
+    if (response.success) {
+      return [response.followerCount, response.followeeCount];
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to follow user");
+    }
   }
 
   //

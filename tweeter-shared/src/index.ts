@@ -23,6 +23,7 @@ export type { TweeterRequest } from "./model/net/request/TweeterRequest";
 export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequest";
 export type { IsFollowerRequest } from "./model/net/request/IsFollowerRequest";
 export type { GetFollowCountRequest } from "./model/net/request/GetFollowCountRequest";
+export type { FollowRequest } from "./model/net/request/FollowRequest";
 
 // 
 // Responses
@@ -31,6 +32,7 @@ export type { TweeterResponse } from "./model/net/response/TweeterResponse";
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
 export type { IsFollowerResponse } from "./model/net/response/IsFollowerResponse";
 export type { GetFollowCountResponse } from "./model/net/response/GetFollowCountResponse";
+export type { FollowResponse } from "./model/net/response/FollowResponse";
 
 // 
 // Utilities

@@ -33,7 +33,7 @@ export class FollowService implements Service {
       pageSize: pageSize,
       lastItem: lastItem ? lastItem.dto : null,
     };
-    
+
     return this.serverFacade.getMoreFollowers(request);
   }
 
@@ -46,7 +46,7 @@ export class FollowService implements Service {
       token: authToken.token,
       userAlias: user.alias,
       selectedUserAlias: selectedUser.alias,
-    }
+    };
 
     return this.serverFacade.getIsFollowerStatus(request);
   }
@@ -58,7 +58,7 @@ export class FollowService implements Service {
     const request = {
       token: authToken.token,
       userAlias: user.alias,
-    }
+    };
 
     return this.serverFacade.getFolloweeCount(request);
   }
@@ -70,7 +70,7 @@ export class FollowService implements Service {
     const request = {
       token: authToken.token,
       userAlias: user.alias,
-    }
+    };
 
     return this.serverFacade.getFollowerCount(request);
   }
@@ -79,14 +79,14 @@ export class FollowService implements Service {
     authToken: AuthToken,
     userToFollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the follow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const request = {
+      token: authToken.token,
+      userToFollow: userToFollow.alias,
+    };
 
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(authToken, userToFollow);
-    const followeeCount = await this.getFolloweeCount(authToken, userToFollow);
-
+    const [followerCount, followeeCount] = await this.serverFacade.follow(
+      request
+    );
     return [followerCount, followeeCount];
   }
 
