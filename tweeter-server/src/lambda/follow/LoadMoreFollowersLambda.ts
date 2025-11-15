@@ -1,14 +1,11 @@
 import { FollowService } from "../../model/service/FollowService";
-import {
-  PagedUserItemRequest,
-  PagedUserItemResponse,
-} from "tweeter-shared/src";
+import { PagedUserItemRequest, PagedUserItemResponse } from "tweeter-shared/src";
 
 export const handler = async (
   request: PagedUserItemRequest
 ): Promise<PagedUserItemResponse> => {
   const followService = new FollowService();
-  const [items, hasMore] = await followService.loadMoreFollowees(
+  const [items, hasMore] = await followService.loadMoreFollowers(
     request.token,
     request.userAlias,
     request.pageSize,
@@ -22,11 +19,3 @@ export const handler = async (
     hasMore: hasMore,
   };
 };
-
-// notes
-
-// we want this handler to do
-// is use the data from the passed in request
-// to call the an instance of FollowService.loadMoreFollowees()
-
-// TODO: refactor? or leave glue code?

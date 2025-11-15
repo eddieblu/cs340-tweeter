@@ -149,6 +149,19 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
+          
+          /followers/load-more:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${loadMoreFollowersFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
 
 
   #
@@ -228,6 +241,20 @@ Resources:
           Properties:
             RestApiId: !Ref tweeterApi
             Path: /followees/load-more
+            Method: POST
+  
+  loadMoreFollowersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: loadMoreFollowersFunction
+      Handler: lambda/follow/LoadMoreFollowersLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /followers/load-more
             Method: POST
 
 
