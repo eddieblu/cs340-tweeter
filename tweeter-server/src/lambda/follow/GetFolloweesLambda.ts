@@ -1,9 +1,9 @@
 import { FollowService } from "../../model/service/FollowService";
-import { PagedUserItemRequest, PagedUserItemResponse } from "tweeter-shared";
+import { PagedItemRequest,PagedItemResponse, UserDto } from "tweeter-shared";
 
 export const handler = async (
-  request: PagedUserItemRequest
-): Promise<PagedUserItemResponse> => {
+  request: PagedItemRequest<UserDto>
+): Promise<PagedItemResponse<UserDto>> => {
   const followService = new FollowService();
   
   const [items, hasMore] = await followService.loadMoreFollowees(
@@ -29,5 +29,3 @@ export const handler = async (
 
 // TODO: refactor duplicate code bt LoadMoreFollowEES and LoadMoreFollowERS?
 // or leave glue code?
-
-// TODO: rename this function to GetFolloweesLambda

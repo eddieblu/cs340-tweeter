@@ -22,7 +22,7 @@ export type { PostSegmentDto } from "./model/dto/PostSegmentDto";
 // Requests 
 //
 export type { TweeterRequest } from "./model/net/request/TweeterRequest";
-export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequest";
+export type { PagedItemRequest } from "./model/net/request/PagedItemRequest";
 export type { IsFollowerRequest } from "./model/net/request/IsFollowerRequest";
 export type { GetFollowCountRequest } from "./model/net/request/GetFollowCountRequest";
 export type { FollowRequest } from "./model/net/request/FollowRequest";
@@ -32,7 +32,7 @@ export type { UnfollowRequest } from "./model/net/request/UnfollowRequest";
 // Responses
 //
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
-export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
+export type { PagedItemResponse } from "./model/net/response/PagedItemResponse";
 export type { IsFollowerResponse } from "./model/net/response/IsFollowerResponse";
 export type { GetFollowCountResponse } from "./model/net/response/GetFollowCountResponse";
 export type { FollowResponse } from "./model/net/response/FollowResponse";

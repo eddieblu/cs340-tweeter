@@ -5,8 +5,10 @@ import {
   GetFollowCountResponse,
   IsFollowerRequest,
   IsFollowerResponse,
-  PagedUserItemRequest,
-  PagedUserItemResponse,
+  PagedItemRequest,
+  PagedItemResponse,
+  Status,
+  StatusDto,
   UnfollowRequest,
   UnfollowResponse,
   User,
@@ -20,16 +22,30 @@ export class ServerFacade {
 
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
+  //
+  // FollowService methods
+  //
+
   public async getMoreFollowees(
-    request: PagedUserItemRequest
+    request: PagedItemRequest<UserDto>
   ): Promise<[User[], boolean]> {
-    return this.getMoreUsersPaged("/followee/list", request, "followees");
+    return this.getMoreItemsPaged<UserDto, User>(
+      "/followee/list",
+      request,
+      (dto: UserDto) => User.fromDto(dto)!,
+      "followees"
+    );
   }
 
   public async getMoreFollowers(
-    request: PagedUserItemRequest
+    request: PagedItemRequest<UserDto>
   ): Promise<[User[], boolean]> {
-    return this.getMoreUsersPaged("/follower/list", request, "followers");
+    return this.getMoreItemsPaged<UserDto, User>(
+      "/follower/list",
+      request,
+      (dto: UserDto) => User.fromDto(dto)!,
+      "followers"
+    );
   }
 
   public async getIsFollowerStatus(
@@ -87,22 +103,49 @@ export class ServerFacade {
   }
 
   //
+  // StatusService methods
+  //
+
+  public async getMoreStoryItems(
+    request: PagedItemRequest<StatusDto>
+  ): Promise<[Status[], boolean]> {
+    return this.getMoreItemsPaged<StatusDto, Status>(
+      "/story/list",
+      request,
+      (dto: StatusDto) => Status.fromDto(dto)!,
+      "story items"
+    );
+  }
+
+  public async getMoreFeedItems(
+    request: PagedItemRequest<StatusDto>
+  ): Promise<[Status[], boolean]> {
+    return this.getMoreItemsPaged<StatusDto, Status>(
+      "/feed/list",
+      request,
+      (dto: StatusDto) => Status.fromDto(dto)!,
+      "feed items"
+    );
+  }
+
+  //
   // Helpers
   //
 
-  private async getMoreUsersPaged(
+  private async getMoreItemsPaged<TDto, TDomain>(
     path: string,
-    request: PagedUserItemRequest,
+    request: PagedItemRequest<TDto>,
+    fromDto: (dto: TDto) => TDomain,
     itemType: string
-  ): Promise<[User[], boolean]> {
+  ): Promise<[TDomain[], boolean]> {
     const response = await this.clientCommunicator.doPost<
-      PagedUserItemRequest,
-      PagedUserItemResponse
+      PagedItemRequest<TDto>,
+      PagedItemResponse<TDto>
     >(request, path);
 
-    const items: User[] | null =
+    const items: TDomain[] | null =
       response.success && response.items
-        ? response.items.map((dto) => User.fromDto(dto) as User)
+        ? response.items.map((dto) => fromDto(dto))
         : null;
 
     if (response.success) {
