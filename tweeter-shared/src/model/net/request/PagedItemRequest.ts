@@ -1,15 +1,4 @@
-import { StatusDto } from "../../..";
-import { UserDto } from "../../dto/UserDto";
 import { TweeterRequest } from "./TweeterRequest";
-
-// export interface PagedUserItemRequest extends TweeterRequest {
-//     readonly token: string;
-//     readonly userAlias: string;
-//     readonly pageSize: number;
-//     readonly lastItem: UserDto | null; 
-// }
-
-// TODO: refactor with generic PagedItemRequest<T> for User and Status items
 
 export interface PagedItemRequest<T> extends TweeterRequest {
     readonly token: string;
@@ -17,11 +6,3 @@ export interface PagedItemRequest<T> extends TweeterRequest {
     readonly pageSize: number;
     readonly lastItem: T | null; 
 }
-
-
-// export interface PagedStatusItemRequest extends TweeterRequest {
-//     readonly token: string;
-//     readonly userAlias: string;
-//     readonly pageSize: number;
-//     readonly lastItem: StatusDto | null;
-// }

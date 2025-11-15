@@ -7,6 +7,8 @@ import {
   IsFollowerResponse,
   PagedItemRequest,
   PagedItemResponse,
+  PostStatusRequest,
+  PostStatusResponse,
   Status,
   StatusDto,
   UnfollowRequest,
@@ -126,6 +128,20 @@ export class ServerFacade {
       (dto: StatusDto) => Status.fromDto(dto)!,
       "feed items"
     );
+  }
+
+  public async postStatus(request: PostStatusRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      PostStatusRequest,
+      PostStatusResponse
+    >(request, "/status/post");
+
+    if (response.success) {
+      return;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to post status");
+    }
   }
 
   //
