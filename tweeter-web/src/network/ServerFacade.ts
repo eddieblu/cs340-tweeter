@@ -1,4 +1,6 @@
 import {
+  IsFollowerRequest,
+  IsFollowerResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
   User,
@@ -24,10 +26,26 @@ export class ServerFacade {
     return this.getMoreUsersPaged("/followers/load-more", request, "followers");
   }
 
+  public async getIsFollowerStatus(
+    request: IsFollowerRequest
+  ): Promise<boolean> {
+    const response = await this.clientCommunicator.doPost<
+      IsFollowerRequest,
+      IsFollowerResponse
+    >(request, "/follow/is-follower");
+
+    if (response.success) {
+      return response.isFollower
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to determine follower status");
+    }
+  }
+
   private async getMoreUsersPaged(
     path: string,
     request: PagedUserItemRequest,
-    emptyLabel: string
+    itemType: string
   ): Promise<[User[], boolean]> {
     const response = await this.clientCommunicator.doPost<
       PagedUserItemRequest,
@@ -41,13 +59,14 @@ export class ServerFacade {
 
     if (response.success) {
       if (items == null) {
-        throw new Error(`No ${emptyLabel} found`);
+        throw new Error(`No ${itemType} found`);
       } else {
         return [items, response.hasMore];
       }
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error(response.message ?? "Failed to get more " + itemType);
     }
   }
+
 }

@@ -21,14 +21,14 @@ export type { UserDto } from "./model/dto/UserDto";
 //
 export type { TweeterRequest } from "./model/net/request/TweeterRequest";
 export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequest";
-
+export type { IsFollowerRequest } from "./model/net/request/IsFollowerRequest";
 
 // 
 // Responses
 //
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
-
+export type { IsFollowerResponse } from "./model/net/response/IsFollowerResponse";
 
 // 
 // Utilities

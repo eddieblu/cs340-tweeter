@@ -2,6 +2,9 @@ import { AuthToken, User, FakeData, UserDto } from "tweeter-shared";
 import { Service } from "./Service";
 
 export class FollowService implements Service {
+  /**
+   * POST /followee/list
+   */
   public async loadMoreFollowees(
     token: string,
     userAlias: string,
@@ -12,6 +15,9 @@ export class FollowService implements Service {
     return this.getFakeData(lastItem, pageSize, userAlias);
   }
 
+  /**
+   * POST /follower/list
+   */
   public async loadMoreFollowers(
     token: string,
     userAlias: string,
@@ -22,15 +28,21 @@ export class FollowService implements Service {
     return this.getFakeData(lastItem, pageSize, userAlias);
   }
 
+  /**
+   * POST /follow/is-follower
+   */
   public async getIsFollowerStatus(
-    authToken: AuthToken,
-    user: User,
-    selectedUser: User
+    token: string,
+    userAlias: string,
+    selectedUserAlias: string
   ): Promise<boolean> {
     // TODO: Replace with the result of calling server
     return FakeData.instance.isFollower();
   }
 
+  /**
+   * POST /followee/count
+   */
   public async getFolloweeCount(
     authToken: AuthToken,
     user: User
@@ -39,6 +51,9 @@ export class FollowService implements Service {
     return FakeData.instance.getFolloweeCount(user.alias);
   }
 
+  /**
+   * POST /follower/count
+   */
   public async getFollowerCount(
     authToken: AuthToken,
     user: User
@@ -47,6 +62,9 @@ export class FollowService implements Service {
     return FakeData.instance.getFollowerCount(user.alias);
   }
 
+  /**
+   * POST /follow/follow
+   */
   public async follow(
     authToken: AuthToken,
     userToFollow: User
@@ -62,6 +80,9 @@ export class FollowService implements Service {
     return [followerCount, followeeCount];
   }
 
+  /**
+   * POST /follow/unfollow
+   */
   public async unfollow(
     authToken: AuthToken,
     userToUnfollow: User
