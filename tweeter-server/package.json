@@ -7,7 +7,8 @@
     "build": "npm run compile",
     "compile": "npm run clean && tsc",
     "clean": "rimraf ./dist",
-    "update-layer": "powershell -ExecutionPolicy Bypass -File ./update-layer.ps1"
+    "update-layer": "powershell -ExecutionPolicy Bypass -File ./update-layer.ps1",
+    "deploy": "npm install && npm run update-layer && npm run build && sam build && sam deploy"
   },
   "keywords": [],
   "author": "",

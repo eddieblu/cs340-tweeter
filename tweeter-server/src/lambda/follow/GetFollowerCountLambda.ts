@@ -6,7 +6,7 @@ export const handler = async (
 ): Promise<GetFollowCountResponse> => {
   const followService = new FollowService();
 
-  const count = await followService.getFolloweeCount(
+  const count = await followService.getFollowerCount(
     request.token,
     request.userAlias
   );

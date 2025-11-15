@@ -4,71 +4,102 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthToken, User } from "tweeter-shared";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "./UserInfoHooks";
-import { UserInfoPresenter, UserInfoView } from "../../presenter/UserInfoPresenter";
+import {
+  UserInfoPresenter,
+  UserInfoView,
+} from "../../presenter/UserInfoPresenter";
 
 const UserInfo = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { displayInfoMessage, displayErrorMessage, deleteMessage } = useMessageActions();
+  const [followeeCount, setFolloweeCount] = useState<number>(-1);
+  const [followerCount, setFollowerCount] = useState<number>(-1);
+
+  const { displayInfoMessage, displayErrorMessage, deleteMessage } =
+    useMessageActions();
 
   const { currentUser, authToken, displayedUser } = useUserInfo();
   const { setDisplayedUser } = useUserInfoActions();
   const navigate = useNavigate();
   const location = useLocation();
 
-  if (!displayedUser) {
-    setDisplayedUser(currentUser!);
-  }
+  const getBaseUrl = (): string => {
+    const segments = location.pathname.split("/@");
+    return segments.length > 1 ? segments[0] : "/";
+  };
+
+  useEffect(() => {
+    if (!displayedUser && currentUser) {
+      setDisplayedUser(currentUser);
+    }
+  }, [currentUser, displayedUser, setDisplayedUser]);
 
   const listener: UserInfoView = {
     displayErrorMessage,
     displayInfoMessage,
     deleteMessage,
     setDisplayedUser,
-    navigate: (currentUserAlias) => navigate(`${getBaseUrl()}/${currentUserAlias}`),
+    navigate: (currentUserAlias) =>
+      navigate(`${getBaseUrl()}/${currentUserAlias}`),
     setIsLoading,
-  }
+    setFolloweeCount,
+    setFollowerCount,
+  };
 
-  const presenterRef = useRef<UserInfoPresenter | null>(null); 
+  const presenterRef = useRef<UserInfoPresenter | null>(null);
   if (!presenterRef.current) {
     presenterRef.current = new UserInfoPresenter(listener);
   }
 
   useEffect(() => {
+    if (!authToken || !currentUser || !displayedUser) {
+      return;
+    }
+
+    setFolloweeCount(-1);
+    setFollowerCount(-1);
+
     setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
     setNumFollowees(authToken!, displayedUser!);
     setNumFollowers(authToken!, displayedUser!);
-  }, [displayedUser]);
-  
-  const getBaseUrl = (): string => {
-    const segments = location.pathname.split("/@");
-    return segments.length > 1 ? segments[0] : "/";
-  };
-  
-  const setIsFollowerStatus = async (authToken: AuthToken, currentUser: User, displayedUser: User) => {
-    presenterRef.current!.setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
+  }, [authToken, currentUser, displayedUser]);
+
+  const setIsFollowerStatus = async (
+    authToken: AuthToken,
+    currentUser: User,
+    displayedUser: User
+  ) => {
+    await presenterRef.current!.setIsFollowerStatus(
+      authToken!,
+      currentUser!,
+      displayedUser!
+    );
   };
 
   const setNumFollowees = async (authToken: AuthToken, displayedUser: User) => {
-    presenterRef.current!.setNumFollowees(authToken!, displayedUser!);
+    await presenterRef.current!.setNumFollowees(authToken!, displayedUser!);
   };
 
   const setNumFollowers = async (authToken: AuthToken, displayedUser: User) => {
-    presenterRef.current!.setNumFollowers(authToken!, displayedUser!);
+    await presenterRef.current!.setNumFollowers(authToken!, displayedUser!);
   };
 
   const switchToLoggedInUser = (event: React.MouseEvent): void => {
-    event.preventDefault(); // keep React code in the component 
+    event.preventDefault(); // keep React code in the component
     presenterRef.current!.switchToLoggedInUser(currentUser!);
   };
 
-  const followDisplayedUser = async (event: React.MouseEvent): Promise<void> => {
-    event.preventDefault(); // keep React code in the component 
+  const followDisplayedUser = async (
+    event: React.MouseEvent
+  ): Promise<void> => {
+    event.preventDefault(); // keep React code in the component
     presenterRef.current!.followDisplayedUser(authToken!, displayedUser!);
   };
 
-  const unfollowDisplayedUser = async (event: React.MouseEvent): Promise<void> => {
-    event.preventDefault(); // keep React code in the component 
+  const unfollowDisplayedUser = async (
+    event: React.MouseEvent
+  ): Promise<void> => {
+    event.preventDefault(); // keep React code in the component
     presenterRef.current!.unfollowDisplayedUser(authToken!, displayedUser!);
   };
 
@@ -104,9 +135,16 @@ const UserInfo = () => {
               </h2>
               <h3>{displayedUser.alias}</h3>
               <br />
-              {presenterRef.current!.followeeCount > -1 && presenterRef.current!.followerCount > -1 && (
+              {/* {followeeCount > -1 && followerCount > -1 && (
                 <div>
-                  Followees: {presenterRef.current!.followeeCount} Followers: {presenterRef.current!.followerCount}
+                  Followees: {followeeCount} Followers: {followerCount}
+                </div>
+              )} */}
+              {followeeCount === -1 || followerCount === -1 ? (
+                <div>Loading follower info...</div>
+              ) : (
+                <div>
+                  Followees: {followeeCount} Followers: {followerCount}
                 </div>
               )}
             </div>

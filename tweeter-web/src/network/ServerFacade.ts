@@ -1,6 +1,6 @@
 import {
-  GetFolloweeCountRequest,
-  GetFolloweeCountResponse,
+  GetFollowCountRequest,
+  GetFollowCountResponse,
   IsFollowerRequest,
   IsFollowerResponse,
   PagedUserItemRequest,
@@ -46,22 +46,12 @@ export class ServerFacade {
     }
   }
 
-  public async getFolloweeCount(
-    request: GetFolloweeCountRequest
-  ): Promise<number> {
-    const response = await this.clientCommunicator.doPost<
-      GetFolloweeCountRequest,
-      GetFolloweeCountResponse
-    >(request, "/followee/count");
+  public async getFolloweeCount(request: GetFollowCountRequest) {
+    return this.getFollowCount(request, "/followee/count");
+  }
 
-    if (response.success) {
-      return response.count;
-    } else {
-      console.error(response);
-      throw new Error(
-        response.message ?? "Failed to get followee count from server"
-      );
-    }
+  public async getFollowerCount(request: GetFollowCountRequest) {
+    return this.getFollowCount(request, "/follower/count");
   }
 
   //
@@ -92,6 +82,23 @@ export class ServerFacade {
     } else {
       console.error(response);
       throw new Error(response.message ?? "Failed to get more " + itemType);
+    }
+  }
+
+  private async getFollowCount(
+    request: GetFollowCountRequest,
+    path: string
+  ): Promise<number> {
+    const response = await this.clientCommunicator.doPost<
+      GetFollowCountRequest,
+      GetFollowCountResponse
+    >(request, path);
+
+    if (response.success && response.count !== undefined) {
+      return response.count;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to get follow count");
     }
   }
 }
