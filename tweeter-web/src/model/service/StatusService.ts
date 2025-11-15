@@ -3,8 +3,8 @@ import { Service } from "./Service";
 import { ServerFacade } from "../../network/ServerFacade";
 
 export class StatusService implements Service {
-    private serverFacade = new ServerFacade();
-  
+  private serverFacade = new ServerFacade();
+
   public async loadMoreStoryItems(
     authToken: AuthToken,
     userAlias: string,
@@ -16,7 +16,7 @@ export class StatusService implements Service {
       userAlias: userAlias,
       pageSize: pageSize,
       lastItem: lastItem ? lastItem.dto : null,
-    }
+    };
 
     return this.serverFacade.getMoreStoryItems(request);
   }
@@ -32,7 +32,7 @@ export class StatusService implements Service {
       userAlias: userAlias,
       pageSize: pageSize,
       lastItem: lastItem ? lastItem.dto : null,
-    }
+    };
 
     return this.serverFacade.getMoreFeedItems(request);
   }
@@ -44,7 +44,7 @@ export class StatusService implements Service {
     const request = {
       token: authToken.token,
       status: newStatus.dto,
-    }
+    };
 
     await this.serverFacade.postStatus(request);
   }

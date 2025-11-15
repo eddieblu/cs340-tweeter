@@ -105,21 +105,6 @@ Resources:
           # Endpoint definitions
           #
 
-          # /user/get:  ##### TODO M3: Change "/user/get" to the actual endpoint URL
-          #   post:
-          #     consumes: *commonConsumes
-          #     produces: *commonProduces
-          #     x-amazon-apigateway-integration:
-          #       type: aws
-          #       httpMethod: POST
-          #       uri:
-          #         ##### TODO M3: Change "userGetFunction" to the actual function name. (Don't delete the $, {}, or .Arn suffix.)
-          #         ##### The function name must agree with the "Web API Lambda functions" section below.
-          #         Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${userGetFunction.Arn}/invocations
-          #       requestTemplates: *commonRequestTemplates
-          #       responses: *commonAmazonResponses
-          #     responses: *commonSwaggerResponses
-
           # /user/create:  ##### TODO M3: Set endpoint URL
           #   post:
           #     consumes: *commonConsumes
@@ -266,6 +251,19 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
+          
+          /user/get:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getUserFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
 
   #
   # SQS Queues  (This will become relevant in Milestone 4. For M3, leave this section commented out.)
@@ -297,23 +295,6 @@ Resources:
 
   ##### TODO M3: Change "userGetFunction" to the actual function name.
   ##### It must match the function name in the "Endpoint definitons" section above.
-  # userGetFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     ##### TODO M3: Change "userGetFunction" to the actual function name.
-  #     FunctionName: userGetFunction
-  #     ##### TODO M3: Modify Handler property to match your code. This identifies the exact function that the lambda should run.
-  #     Handler: handlers/users/UserGetHandler.userGetHandler
-  #     Policies: *commonPolicies
-  #     Events:
-  #       PostApi:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref tweeterApi
-  #           ##### TODO M3: Modify the Path property to the actual endpoint URL.
-  #           ##### It must match the URL in the "Endpoint definitions" section above.
-  #           Path: /user/get
-  #           Method: POST
 
   # userCreateFunction:  ##### TODO M3: Set function name
   #   Type: AWS::Serverless::Function
@@ -470,6 +451,20 @@ Resources:
           Properties:
             RestApiId: !Ref tweeterApi
             Path: /status/post
+            Method: POST
+    
+  getUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getUserFunction
+      Handler: lambda/user/GetUserLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /user/get
             Method: POST
 
   #

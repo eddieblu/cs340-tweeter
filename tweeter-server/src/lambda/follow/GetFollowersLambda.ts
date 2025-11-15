@@ -20,5 +20,3 @@ export const handler = async (
     hasMore: hasMore,
   };
 };
-
-// TODO: rename this function to GetFollowersLambda

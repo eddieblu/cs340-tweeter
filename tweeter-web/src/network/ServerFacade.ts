@@ -3,6 +3,8 @@ import {
   FollowResponse,
   GetFollowCountRequest,
   GetFollowCountResponse,
+  GetUserRequest,
+  GetUserResponse,
   IsFollowerRequest,
   IsFollowerResponse,
   PagedItemRequest,
@@ -130,6 +132,10 @@ export class ServerFacade {
     );
   }
 
+  //
+  // UserService methods
+  //
+
   public async postStatus(request: PostStatusRequest): Promise<void> {
     const response = await this.clientCommunicator.doPost<
       PostStatusRequest,
@@ -141,6 +147,20 @@ export class ServerFacade {
     } else {
       console.error(response);
       throw new Error(response.message ?? "Failed to post status");
+    }
+  }
+
+  public async getUser(request: GetUserRequest): Promise<User | null> {
+    const response = await this.clientCommunicator.doPost<
+      GetUserRequest,
+      GetUserResponse
+    >(request, "/user/get");
+
+    if (response.success) {
+      return response.user ? User.fromDto(response.user) : null;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to get user");
     }
   }
 
