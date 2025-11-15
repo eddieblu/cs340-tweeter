@@ -81,7 +81,7 @@ export class FollowService implements Service {
   ): Promise<[followerCount: number, followeeCount: number]> {
     const request = {
       token: authToken.token,
-      userToFollow: userToFollow.alias,
+      userToFollowAlias: userToFollow.alias,
     };
 
     const [followerCount, followeeCount] = await this.serverFacade.follow(
@@ -94,20 +94,14 @@ export class FollowService implements Service {
     authToken: AuthToken,
     userToUnfollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const request = {
+      token: authToken.token,
+      userToUnfollowAlias: userToUnfollow.alias,
+    };
 
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(
-      authToken,
-      userToUnfollow
+    const [followerCount, followeeCount] = await this.serverFacade.unfollow(
+      request
     );
-    const followeeCount = await this.getFolloweeCount(
-      authToken,
-      userToUnfollow
-    );
-
     return [followerCount, followeeCount];
   }
 }

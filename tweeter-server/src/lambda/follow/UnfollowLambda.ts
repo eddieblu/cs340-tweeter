@@ -1,16 +1,16 @@
 // tweeter-server/src/lambda/follow/FollowUserHandler.ts
-import { FollowRequest, FollowResponse } from "tweeter-shared";
+import { UnfollowRequest, UnfollowResponse } from "tweeter-shared";
 import { FollowService } from "../../model/service/FollowService";
 
 export const handler = async (
-  request: FollowRequest
-): Promise<FollowResponse> => {
+  request: UnfollowRequest
+): Promise<UnfollowResponse> => {
   const followService = new FollowService();
 
   // server-side FollowService method; name however you like
-  const [followerCount, followeeCount] = await followService.follow(
+  const [followerCount, followeeCount] = await followService.unfollow(
     request.token,
-    request.userToFollowAlias
+    request.userToUnfollowAlias
   );
 
   return {

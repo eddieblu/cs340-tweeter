@@ -7,6 +7,8 @@ import {
   IsFollowerResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
+  UnfollowRequest,
+  UnfollowResponse,
   User,
   UserDto,
 } from "tweeter-shared";
@@ -67,6 +69,20 @@ export class ServerFacade {
     } else {
       console.error(response);
       throw new Error(response.message ?? "Failed to follow user");
+    }
+  }
+
+  async unfollow(request: UnfollowRequest) {
+    const response = await this.clientCommunicator.doPost<
+      UnfollowRequest,
+      UnfollowResponse
+    >(request, "/follow/unfollow");
+
+    if (response.success) {
+      return [response.followerCount, response.followeeCount];
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to unfollow user");
     }
   }
 
