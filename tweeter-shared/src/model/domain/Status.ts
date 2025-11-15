@@ -125,7 +125,7 @@ export class Status {
       index = word.length;
 
       // Remove trailing non-alphabetic characters (such as punctuation) that can't be at the end of a url
-      while (!Status.isLetter(word[index])) {
+      while (index < word.length && !Status.isLetter(word.charAt(index))) {
         index--;
       }
     }

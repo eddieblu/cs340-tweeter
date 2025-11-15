@@ -105,11 +105,11 @@ export class FakeData {
             : this.fakeUsers[0];
 
         const post = `Post ${i} ${j}
-        My friend ${mention.alias} likes this website: http://byu.edu. Do you? 
+        My friend ${mention!.alias} likes this website: http://byu.edu. Do you? 
         Or do you prefer this one: http://cs.byu.edu?`;
         const timestamp =
           timestampStart + 30000000000 * (i * this.fakeUsers.length + j);
-        const status = new Status(post, sender, timestamp);
+        const status = new Status(post, sender!, timestamp);
         this.allStatuses.push(status);
       }
     }
@@ -121,14 +121,14 @@ export class FakeData {
    * Returns the first fake user, or null if there are no fake users.
    */
   public get firstUser(): User | null {
-    return this.fakeUsers.length > 0 ? this.fakeUsers[0] : null;
+    return this.fakeUsers.length > 0 ? this.fakeUsers[0]! : null;
   }
 
   /**
    * Returns the second fake user, or null if there are not at least two fake users.
    */
   public get secondUser(): User | null {
-    return this.fakeUsers.length > 1 ? this.fakeUsers[1] : null;
+    return this.fakeUsers.length > 1 ? this.fakeUsers[1]! : null;
   }
 
   /**
@@ -172,7 +172,8 @@ export class FakeData {
     // Find the index of the first user to be returned
     if (lastUser != null) {
       for (let i = 0; i < this.fakeUsers.length; i++) {
-        if (this.fakeUsers[i].equals(lastUser)) {
+        const user = this.fakeUsers[i];
+        if (user && lastUser && user.equals(lastUser)) {
           userIndex = i + 1;
           break;
         }
@@ -184,8 +185,8 @@ export class FakeData {
     while (userIndex < this.fakeUsers.length && count < limit) {
       const currentUser = this.fakeUsers[userIndex];
 
-      if (omit == null || currentUser.alias !== omit) {
-        fakeUsersToReturn.push(currentUser);
+      if (omit == null || currentUser!.alias !== omit) {
+        fakeUsersToReturn.push(currentUser!);
         count++;
       }
 
@@ -212,7 +213,7 @@ export class FakeData {
     if (lastStatus != null) {
       for (let i = 0; i < this.fakeStatuses.length; i++) {
         const currentStatus = this.fakeStatuses[i];
-        if (currentStatus.equals(lastStatus)) {
+        if (currentStatus && lastStatus && currentStatus.equals(lastStatus)) {
           statusIndex = i + 1;
           break;
         }
@@ -225,7 +226,7 @@ export class FakeData {
       statusIndex < this.fakeStatuses.length && count < limit;
       count++, statusIndex++
     ) {
-      fakeStatusesToReturn.push(this.fakeStatuses[statusIndex]);
+      fakeStatusesToReturn.push(this.fakeStatuses[statusIndex]!);
     }
 
     return [fakeStatusesToReturn, statusIndex < this.fakeStatuses.length];

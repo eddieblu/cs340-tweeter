@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npm run compile",
     "compile": "npm run clean && tsc",
-    "clean": "rimraf ./dist"
+    "clean": "rimraf ./dist",
+    "update-layer": "powershell -ExecutionPolicy Bypass -File ./update-layer.ps1"
   },
   "keywords": [],
   "author": "",

@@ -1,15 +1,15 @@
-import { PagedItemUserRequest, PagedItemUserResponse } from "tweeter-shared";
 import { FollowService } from "../../model/service/FollowService";
+import { PagedUserItemRequest, PagedUserItemResponse } from "tweeter-shared/src";
 
 export const handler = async (
-  request: PagedItemUserRequest
-): Promise<PagedItemUserResponse> => {
+  request: PagedUserItemRequest
+): Promise<PagedUserItemResponse> => {
   // we want this handler to do
   // is use the data from the passed in request
   // to call the an instance of FollowService.loadMoreFollowees()
 
   const followService = new FollowService();
-  const [items, hasMorePages] = await followService.loadMoreFollowees(
+  const [items, hasMore] = await followService.loadMoreFollowees(
     request.token,
     request.userAlias,
     request.pageSize,
@@ -20,6 +20,6 @@ export const handler = async (
     success: true,
     message: "",
     items: items,
-    hasMorePages: hasMorePages,
+    hasMore: hasMore,
   };
 };
