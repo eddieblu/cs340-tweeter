@@ -1,8 +1,17 @@
 import { Buffer } from "buffer";
-import { AuthToken, User, FakeData, UserDto } from "tweeter-shared";
+import {
+  AuthToken,
+  User,
+  FakeData,
+  UserDto,
+  AuthTokenDto,
+} from "tweeter-shared";
 import { Service } from "./Service";
 
 export class UserService implements Service {
+  /**
+   * POST /user/get
+   */
   public async getUser(
     token: string,
     userAlias: string
@@ -12,10 +21,13 @@ export class UserService implements Service {
     return user?.dto || null;
   }
 
+  /**
+   * POST /user/login
+   */
   public async login(
     alias: string,
     password: string
-  ): Promise<[User, AuthToken]> {
+  ): Promise<[UserDto, AuthTokenDto]> {
     // TODO: Replace with the result of calling the server
     const user = FakeData.instance.firstUser;
 
@@ -23,9 +35,12 @@ export class UserService implements Service {
       throw new Error("Invalid alias or password");
     }
 
-    return [user, FakeData.instance.authToken];
+    return [user.dto, FakeData.instance.authToken];
   }
 
+  /**
+   * POST /user/register
+   */
   public async register(
     firstName: string,
     lastName: string,
@@ -48,6 +63,9 @@ export class UserService implements Service {
     return [user, FakeData.instance.authToken];
   }
 
+  /**
+   * POST /user/logout
+   */
   public async logout(token: string): Promise<void> {
     // Pause so we can see the logging out message. Delete when the call to the server is implemented.
     await new Promise((res) => setTimeout(res, 1000));
