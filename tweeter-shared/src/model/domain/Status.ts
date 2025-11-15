@@ -1,3 +1,4 @@
+import { StatusDto } from "../..";
 import { PostSegment, Type } from "./PostSegment";
 import { User } from "./User";
 import { format } from "date-fns";
@@ -21,12 +22,12 @@ export class Status {
     let startIndex = 0;
 
     for (let reference of Status.getSortedReferences(post)) {
-      if (startIndex < reference.startPostion) {
+      if (startIndex < reference.startPosition) {
         segments.push(
           new PostSegment(
-            post.substring(startIndex, reference.startPostion),
+            post.substring(startIndex, reference.startPosition),
             startIndex,
-            reference.startPostion - 1,
+            reference.startPosition - 1,
             Type.text
           )
         );
@@ -59,7 +60,7 @@ export class Status {
     ];
 
     references.sort((a, b) => {
-      return a.startPostion - b.startPostion;
+      return a.startPosition - b.startPosition;
     });
 
     return references;
@@ -273,5 +274,29 @@ export class Status {
 
   public toJson(): string {
     return JSON.stringify(this);
+  }
+
+  public get dto(): StatusDto {
+    return {
+      post: this.post,
+      user: this.user.dto,
+      timestamp: this.timestamp,
+      segments: this.segments.map((segment) => segment.dto),
+    };
+  }
+
+  public static fromDto(dto: StatusDto | null): Status | null {
+    if (dto == null) return null;
+    else {
+      const status = new Status(
+        dto.post,
+        User.fromDto(dto.user)!,
+        dto.timestamp
+      );
+      status.segments = dto.segments.map((segmentDto) =>
+        PostSegment.fromDto(segmentDto)
+      );
+      return status;
+    }
   }
 }

@@ -90,14 +90,14 @@ export class User {
     };
   }
 
-  public static fromDto(userDto: UserDto | null): User | null {
-    return userDto == null
+  public static fromDto(dto: UserDto | null): User | null {
+    return dto == null
       ? null
       : new User(
-          userDto.firstName,
-          userDto.lastName,
-          userDto.alias,
-          userDto.imageUrl
+          dto.firstName,
+          dto.lastName,
+          dto.alias,
+          dto.imageUrl
         );
   }
 }

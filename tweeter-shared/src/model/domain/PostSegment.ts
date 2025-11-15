@@ -1,3 +1,5 @@
+import { PostSegmentDto } from "../dto/PostSegmentDto";
+
 export enum Type {
   text = "Text",
   alias = "Alias",
@@ -7,7 +9,7 @@ export enum Type {
 
 export class PostSegment {
   private _text: string;
-  private _startPostion: number;
+  private _startPosition: number;
   private _endPosition: number;
   private _type: Type;
 
@@ -18,7 +20,7 @@ export class PostSegment {
     type: Type
   ) {
     this._text = text;
-    this._startPostion = startPosition;
+    this._startPosition = startPosition;
     this._endPosition = endPosition;
     this._type = type;
   }
@@ -27,8 +29,8 @@ export class PostSegment {
     return this._text;
   }
 
-  public get startPostion(): number {
-    return this._startPostion;
+  public get startPosition(): number {
+    return this._startPosition;
   }
 
   public get endPosition(): number {
@@ -37,5 +39,23 @@ export class PostSegment {
 
   public get type(): Type {
     return this._type;
+  }
+
+  public get dto(): PostSegmentDto {
+    return {
+      text: this.text,
+      startPosition: this.startPosition,
+      endPosition: this.endPosition,
+      type: this.type,
+    };
+  }
+
+  public static fromDto(dto: PostSegmentDto): PostSegment {
+    return new PostSegment(
+      dto.text,
+      dto.startPosition,
+      dto.endPosition,
+      dto.type
+    );
   }
 }
