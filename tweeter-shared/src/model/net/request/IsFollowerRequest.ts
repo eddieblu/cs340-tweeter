@@ -1,7 +1,7 @@
 import { TweeterRequest } from "./TweeterRequest";
 
 export interface IsFollowerRequest extends TweeterRequest {
-    authToken: string;
-    userAlias: string;
-    selectedUserAlias: string;
+    readonly token: string;
+    readonly userAlias: string;
+    readonly selectedUserAlias: string;
 }

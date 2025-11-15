@@ -17,13 +17,13 @@ export class ServerFacade {
   public async getMoreFollowees(
     request: PagedUserItemRequest
   ): Promise<[User[], boolean]> {
-    return this.getMoreUsersPaged("/followees/load-more", request, "followees");
+    return this.getMoreUsersPaged("/followee/list", request, "followees");
   }
 
   public async getMoreFollowers(
     request: PagedUserItemRequest
   ): Promise<[User[], boolean]> {
-    return this.getMoreUsersPaged("/followers/load-more", request, "followers");
+    return this.getMoreUsersPaged("/follower/list", request, "followers");
   }
 
   public async getIsFollowerStatus(
