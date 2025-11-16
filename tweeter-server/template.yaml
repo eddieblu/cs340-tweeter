@@ -105,23 +105,6 @@ Resources:
           # Endpoint definitions
           #
 
-          # /user/create:  ##### TODO M3: Set endpoint URL
-          #   post:
-          #     consumes: *commonConsumes
-          #     produces: *commonProduces
-          #     x-amazon-apigateway-integration:
-          #       type: aws
-          #       httpMethod: POST
-          #       uri:
-          #         ##### TODO M3: Set function name
-          #         Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${userCreateFunction.Arn}/invocations
-          #       requestTemplates: *commonRequestTemplates
-          #       responses: *commonAmazonResponses
-          #     responses: *commonSwaggerResponses
-
-          #
-          # TODO M3: ADD MORE ENDPOINT DEFINITIONS HERE
-          #
           /followee/list:
             post:
               consumes: *commonConsumes
@@ -278,6 +261,19 @@ Resources:
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
 
+          /user/register:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${registerFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
+
   #
   # SQS Queues  (This will become relevant in Milestone 4. For M3, leave this section commented out.)
   #
@@ -306,26 +302,6 @@ Resources:
   # Web API Lambda functions
   #
 
-  ##### TODO M3: Change "userGetFunction" to the actual function name.
-  ##### It must match the function name in the "Endpoint definitons" section above.
-
-  # userCreateFunction:  ##### TODO M3: Set function name
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     FunctionName: userCreateFunction  ##### TODO M3: Set function name
-  #     Handler: handlers/users/UserCreateHandler.userCreateHandler  ##### TODO M3: Set Handler
-  #     Policies: *commonPolicies
-  #     Events:
-  #       PostApi:
-  #         Type: Api
-  #         Properties:
-  #           RestApiId: !Ref tweeterApi
-  #           Path: /user/create  ##### TODO M3: Set Path
-  #           Method: POST
-
-  #
-  # TODO M3: ADD MORE WEB API LAMBDA DEFINITIONS HERE
-  #
   loadMoreFolloweesFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -493,6 +469,22 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /user/login
             Method: POST
+  
+  registerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: registerFunction
+      Handler: lambda/user/RegisterLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /user/register
+            Method: POST
+
+    
 
   #
   # SQS Queue Lambda Functions  (This will become relevant in Milestone 4. For M3, leave this section commented out.)

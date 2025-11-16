@@ -14,6 +14,8 @@ import {
   PagedItemResponse,
   PostStatusRequest,
   PostStatusResponse,
+  RegisterRequest,
+  RegisterResponse,
   Status,
   StatusDto,
   UnfollowRequest,
@@ -188,6 +190,23 @@ export class ServerFacade {
     }
 
     return [user, authToken];
+  }
+
+  public async register(request: RegisterRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      RegisterRequest,
+      RegisterResponse
+    >(request, "/user/register");
+
+    if (response.success) {
+      const user = User.fromDto(response.user);
+      const authToken = AuthToken.fromDto(response.authToken);
+
+      return [user!, authToken!];
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to register user");
+    }
   }
 
   //

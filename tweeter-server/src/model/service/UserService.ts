@@ -1,7 +1,4 @@
-import { Buffer } from "buffer";
 import {
-  AuthToken,
-  User,
   FakeData,
   UserDto,
   AuthTokenDto,
@@ -47,21 +44,18 @@ export class UserService implements Service {
     lastName: string,
     alias: string,
     password: string,
-    userImageBytes: Uint8Array,
+    imageStringBase64: string,
     imageFileExtension: string
-  ): Promise<[User, AuthToken]> {
-    // Not neded now, but will be needed when you make the request to the server in milestone 3
-    const imageStringBase64: string =
-      Buffer.from(userImageBytes).toString("base64");
-
+  ): Promise<[UserDto, AuthTokenDto]> {
     // TODO: Replace with the result of calling the server
     const user = FakeData.instance.firstUser;
+    const authToken = FakeData.instance.authToken;
 
-    if (user === null) {
+    if (user === null || authToken === null) {
       throw new Error("Invalid registration");
     }
 
-    return [user, FakeData.instance.authToken];
+    return [user.dto, authToken.dto];
   }
 
   /**

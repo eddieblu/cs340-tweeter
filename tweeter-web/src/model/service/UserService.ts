@@ -2,9 +2,9 @@ import { Buffer } from "buffer";
 import {
   AuthToken,
   User,
-  FakeData,
   GetUserRequest,
   LoginRequest,
+  RegisterRequest,
 } from "tweeter-shared";
 import { Service } from "./Service";
 import { ServerFacade } from "../../network/ServerFacade";
@@ -50,18 +50,18 @@ export class UserService implements Service {
     const imageStringBase64: string =
       Buffer.from(userImageBytes).toString("base64");
 
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    const request: RegisterRequest = {
+      firstName: firstName,
+      lastName: lastName,
+      alias: alias,
+      password: password,
+      imageStringBase64: imageStringBase64,
+      imageFileExtension: imageFileExtension,
+    };
 
-    if (user === null) {
-      throw new Error("Invalid registration");
-    }
-
-    return [user, FakeData.instance.authToken];
+    return this.serverFacade.register(request);
   }
 
-  // used by AppNavbarPresenter.ts --> should there be an AuthService.ts ?
-  // maybe not, because login is handled by this UserService.ts
   public async logout(authToken: AuthToken): Promise<void> {
     // Pause so we can see the logging out message. Delete when the call to the server is implemented.
     await new Promise((res) => setTimeout(res, 1000));

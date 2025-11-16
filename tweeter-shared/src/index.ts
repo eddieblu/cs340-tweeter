@@ -31,7 +31,7 @@ export type { UnfollowRequest } from "./model/net/request/UnfollowRequest";
 export type { PostStatusRequest } from "./model/net/request/PostStatusRequest";
 export type { GetUserRequest } from "./model/net/request/GetUserRequest";
 export type { LoginRequest } from "./model/net/request/LoginRequest";
-// export type { RegisterRequest } from "./model/net/request/RegisterRequest";
+export type { RegisterRequest } from "./model/net/request/RegisterRequest";
 // export type { LogoutRequest } from "./model/net/request/LogoutRequest";
 
 // 
@@ -46,7 +46,7 @@ export type { UnfollowResponse } from "./model/net/response/UnfollowResponse";
 export type { PostStatusResponse } from "./model/net/response/PostStatusResponse";
 export type { GetUserResponse } from "./model/net/response/GetUserResponse";
 export type { LoginResponse } from "./model/net/response/LoginResponse";
-// export type { RegisterResponse } from "./model/net/response/RegisterResponse";
+export type { RegisterResponse } from "./model/net/response/RegisterResponse";
 // export type { LogoutResponse } from "./model/net/response/LogoutResponse";
 
 // 
