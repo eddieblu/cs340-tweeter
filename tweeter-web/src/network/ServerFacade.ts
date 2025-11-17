@@ -10,6 +10,8 @@ import {
   IsFollowerResponse,
   LoginRequest,
   LoginResponse,
+  LogoutRequest,
+  LogoutResponse,
   PagedItemRequest,
   PagedItemResponse,
   PostStatusRequest,
@@ -185,7 +187,7 @@ export class ServerFacade {
 
     if (!user || !authToken) {
       throw new Error(
-        response.message ?? "Server returned invalid user or authtoken"
+        response.message ?? "Server returned invalid user or authToken"
       );
     }
 
@@ -207,6 +209,21 @@ export class ServerFacade {
       console.error(response);
       throw new Error(response.message ?? "Failed to register user");
     }
+  }
+
+  public async logout(request: LogoutRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      LogoutRequest,
+      LogoutResponse
+    >(request, "/user/logout");
+
+    if (response.success) {
+      return;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Failed to log out");
+    }
+
   }
 
   //

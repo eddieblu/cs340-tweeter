@@ -1,8 +1,4 @@
-import {
-  FakeData,
-  UserDto,
-  AuthTokenDto,
-} from "tweeter-shared";
+import { FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
 import { Service } from "./Service";
 
 export class UserService implements Service {
@@ -27,13 +23,13 @@ export class UserService implements Service {
   ): Promise<[UserDto, AuthTokenDto]> {
     // TODO: Replace with the result of calling the server
     const user = FakeData.instance.firstUser;
-    const authtoken = FakeData.instance.authToken;
+    const authToken = FakeData.instance.authToken;
 
     if (user === null) {
       throw new Error("Invalid alias or password");
     }
 
-    return [user.dto, authtoken.dto];
+    return [user.dto, authToken.dto];
   }
 
   /**
@@ -61,8 +57,11 @@ export class UserService implements Service {
   /**
    * POST /user/logout
    */
-  public async logout(token: string): Promise<void> {
-    // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-    await new Promise((res) => setTimeout(res, 1000));
+  public async logout(authToken: string): Promise<void> {
+    // Pause so we can see the logging out message. Remove when connected to the server
+    // await new Promise((f) => setTimeout(f, 2000));
+
+    // M3: no-op.
+    // M4: actually invalidate token in DB.
   }
 }
