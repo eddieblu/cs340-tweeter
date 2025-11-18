@@ -9,7 +9,7 @@
   "schemes" : [ "https" ],
   "paths" : {
     "/feed/list" : {
-      "post" : {
+      "post" : { 
         "description" : "Retrieves a paginated list of statuses from accounts the logged-in user follows. Requires a valid auth token.",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
