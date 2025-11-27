@@ -7,7 +7,7 @@ export interface UserDao {
   
   getPasswordHash(alias: string): Promise<string | null>;
   
-  incremementFollowerCount(alias: string, delta: number): Promise<void>;
+  incrementFollowerCount(alias: string, delta: number): Promise<void>;
   
-  incremementFolloweeCount(alias: string, delta: number): Promise<void>;
+  incrementFolloweeCount(alias: string, delta: number): Promise<void>;
 }
