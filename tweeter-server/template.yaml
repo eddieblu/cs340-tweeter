@@ -2,7 +2,6 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: SAM config for Tweeter server
 
-
 #
 # Global Lambda function properties. These apply to every Lambda function.
 #
@@ -14,7 +13,6 @@ Globals:
       - !Ref tweeterLayer
     Timeout: 30
     MemorySize: 128
-
 
 #
 # Reusable blocks of configuration. These are referenced throughout the template to avoid duplication.
@@ -36,13 +34,10 @@ Metadata:
     Access-Control-Allow-Origin:
       type: string
 
-
 #
 # AWS resource definitions
 #
 Resources:
-
-
   #
   # Web API
   #
@@ -100,13 +95,13 @@ Resources:
             description: "Internal Server Error"
             headers: *commonSwaggerResponseHeaders
         paths:
-
           #
           # Endpoint definitions
           #
 
           /followee/list:
             post:
+              description: "Retrieves a paginated list of users that the given user is following. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -117,9 +112,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /follower/list:
             post:
+              description: "Retrieves a paginated list of users that follow the given user. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -130,9 +126,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /follow/is-follower:
             post:
+              description: "Determines whether one user is currently following another user. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -143,9 +140,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /followee/count:
             post:
+              description: "Returns the number of users the specified user is following. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -156,9 +154,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /follower/count:
             post:
+              description: "Returns the number of users following the specified user. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -172,6 +171,7 @@ Resources:
 
           /follow/follow:
             post:
+              description: "Creates a follow relationship between the logged-in user and the target user. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -185,6 +185,7 @@ Resources:
 
           /follow/unfollow:
             post:
+              description: "Removes the follow relationship between the logged-in user and the target user. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -198,6 +199,7 @@ Resources:
 
           /story/list:
             post:
+              description: "Retrieves a paginated list of statuses created by the specified user. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -208,9 +210,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /feed/list:
             post:
+              description: "Retrieves a paginated list of statuses from accounts the logged-in user follows. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -221,9 +224,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /status/post:
             post:
+              description: "Posts a new status update for the logged-in user. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -234,9 +238,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /user/get:
             post:
+              description: "Retrieves user details for the given alias. Requires a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -247,9 +252,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /user/login:
             post:
+              description: "Authenticates a user using alias and password and returns the corresponding user and a valid auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -263,6 +269,7 @@ Resources:
 
           /user/register:
             post:
+              description: "Creates a new user account, stores the user information, and returns the new user and an auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -273,9 +280,10 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
-          
+
           /user/logout:
             post:
+              description: "Logs out the current user by invalidating the provided auth token."
               consumes: *commonConsumes
               produces: *commonProduces
               x-amazon-apigateway-integration:
@@ -296,7 +304,6 @@ Resources:
   #     Properties:
   #       QueueName: MyQueue
 
-
   #
   # Lambda Layer (reused by all Lambda functions)
   #
@@ -309,7 +316,6 @@ Resources:
       CompatibleRuntimes:
         - nodejs20.x
       RetentionPolicy: DELETE
-
 
   #
   # Web API Lambda functions
@@ -328,7 +334,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /followee/list
             Method: POST
-  
+
   loadMoreFollowersFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -342,7 +348,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /follower/list
             Method: POST
-    
+
   getIsFollowerStatusFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -356,7 +362,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /follow/is-follower
             Method: POST
-  
+
   getFolloweeCountFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -370,7 +376,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /followee/count
             Method: POST
-    
+
   getFollowerCountFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -384,7 +390,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /follower/count
             Method: POST
-  
+
   followFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -398,7 +404,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /follow/follow
             Method: POST
-  
+
   unfollowFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -412,7 +418,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /follow/unfollow
             Method: POST
-  
+
   loadMoreStoryItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -426,7 +432,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /story/list
             Method: POST
-    
+
   loadMoreFeedItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -440,7 +446,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /feed/list
             Method: POST
-  
+
   postStatusFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -454,7 +460,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /status/post
             Method: POST
-    
+
   getUserFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -468,7 +474,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /user/get
             Method: POST
-    
+
   loginFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -482,7 +488,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /user/login
             Method: POST
-  
+
   registerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -496,7 +502,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /user/register
             Method: POST
-  
+
   logoutFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -510,7 +516,6 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /user/logout
             Method: POST
-    
 
   #
   # SQS Queue Lambda Functions  (This will become relevant in Milestone 4. For M3, leave this section commented out.)
@@ -529,78 +534,87 @@ Resources:
   #             Queue: !GetAtt MyQueue.Arn
   #             Enabled: true
 
-
   #
   # DynamoDB Tables
   #
 
-  visitTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't
-               #####       need to be the actual table name, just a unique identifier.
+  userTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: visit  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
+      TableName: user
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
-        - AttributeName: person_name
-          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
-        - AttributeName: place_name
+        - AttributeName: alias
           AttributeType: S
       KeySchema:
-        - AttributeName: person_name  ##### TODO: Set the table partition key name
+        - AttributeName: alias
           KeyType: HASH
-        - AttributeName: place_name  ##### TODO: Set the table sort key name. Delete these
-          KeyType: RANGE             #####       two lines if the table has no sort key.
-      BillingMode: PROVISIONED
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
-        WriteCapacityUnits: 1  #####       one is fine for now, but you may need to change them later.
-      ##### TODO: If you don't need an index for this table, delete the GlobalSecondaryIndexes property and all its subproperties.
-      GlobalSecondaryIndexes:
-        - IndexName: place_index  ##### TODO: Set the actual index name. This is what your code will use to identify this index.
-          KeySchema:
-            - AttributeName: place_name  ##### TODO: Set the index partition key name
-              KeyType: HASH
-            - AttributeName: person_name  ##### TODO: Set the index sort key name. Delete these
-              KeyType: RANGE              #####       two lines if the index has no sort key.
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1   ##### TODO: Same thing. Indexes have their own read/write
-            WriteCapacityUnits: 1  #####       capacities that you may need to change.
-          Projection:
-            ProjectionType: ALL
 
-  followTable:  ##### TODO: Change to match the table name
+  followTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: follow  ##### TODO: Set the actual table name
+      TableName: follow
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        ##### TODO: Add attributes that will be partition or sort keys, including their datatypes (for both table and index)
         - AttributeName: follower_alias
           AttributeType: S
         - AttributeName: followee_alias
           AttributeType: S
       KeySchema:
-        - AttributeName: follower_alias  ##### TODO: Set table partition key
+        - AttributeName: follower_alias
           KeyType: HASH
-        - AttributeName: followee_alias  ##### TODO: Set table sort key
+        - AttributeName: followee_alias
           KeyType: RANGE
-      BillingMode: PROVISIONED
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
       GlobalSecondaryIndexes:
-        - IndexName: follow_index  ##### TODO: Set the actual index name
+        - IndexName: follow_index
           KeySchema:
-            - AttributeName: followee_alias  ##### TODO: Set index partition key
+            - AttributeName: followee_alias
               KeyType: HASH
-            - AttributeName: follower_alias  ##### TODO: Set index sort key
+            - AttributeName: follower_alias
               KeyType: RANGE
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
           Projection:
             ProjectionType: ALL
 
-  #
-  # TODO: ADD MORE TABLE DEFINITIONS HERE
-  #
-  
+  storyTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: story
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: author_alias
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: author_alias
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+  feedTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: feed
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: receiver_alias
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: receiver_alias
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+  authTokenTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: authToken
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: token
+          AttributeType: S
+      KeySchema:
+        - AttributeName: token
+          KeyType: HASH
