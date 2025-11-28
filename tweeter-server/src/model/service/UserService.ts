@@ -2,9 +2,6 @@ import { FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
 import { Service } from "./Service";
 
 export class UserService implements Service {
-  /**
-   * POST /user/get
-   */
   public async getUser(
     token: string,
     userAlias: string
@@ -14,9 +11,6 @@ export class UserService implements Service {
     return user?.dto || null;
   }
 
-  /**
-   * POST /user/login
-   */
   public async login(
     alias: string,
     password: string
@@ -32,9 +26,6 @@ export class UserService implements Service {
     return [user.dto, authToken.dto];
   }
 
-  /**
-   * POST /user/register
-   */
   public async register(
     firstName: string,
     lastName: string,
@@ -54,14 +45,9 @@ export class UserService implements Service {
     return [user.dto, authToken.dto];
   }
 
-  /**
-   * POST /user/logout
-   */
   public async logout(authToken: string): Promise<void> {
-    // Pause so we can see the logging out message. Remove when connected to the server
-    // await new Promise((f) => setTimeout(f, 2000));
-
     // M3: no-op.
     // M4: actually invalidate token in DB.
   }
 }
+
