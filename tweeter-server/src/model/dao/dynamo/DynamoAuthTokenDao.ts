@@ -8,7 +8,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
-const AUTH_TOKEN_TABLE_NAME = "authToken";
+const TABLE_NAME = "authToken";
 
 export class DynamoAuthTokenDao implements AuthTokenDao {
   private readonly docClient: DynamoDBDocumentClient;
@@ -27,7 +27,7 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
 
     await this.docClient.send(
       new PutCommand({
-        TableName: AUTH_TOKEN_TABLE_NAME,
+        TableName: TABLE_NAME,
         Item: authTokenItem,
       })
     );
@@ -36,7 +36,7 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
   async getAuthToken(token: string): Promise<AuthToken | null> {
     const result = await this.docClient.send(
       new GetCommand({
-        TableName: AUTH_TOKEN_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: { token },
       })
     );
@@ -58,7 +58,7 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
   async deleteAuthToken(token: string): Promise<void> {
     await this.docClient.send(
       new DeleteCommand({
-        TableName: AUTH_TOKEN_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: { token },
       })
     );

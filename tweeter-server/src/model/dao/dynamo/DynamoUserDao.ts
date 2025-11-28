@@ -9,7 +9,7 @@ import {
 import { User } from "tweeter-shared";
 import { UserDao } from "../UserDao";
 
-const USER_TABLE_NAME = "user";
+const TABLE_NAME = "user";
 
 export class DynamoUserDao implements UserDao {
   private readonly docClient: DynamoDBDocumentClient;
@@ -23,7 +23,7 @@ export class DynamoUserDao implements UserDao {
   async getUser(alias: string): Promise<User | null> {
     const result = await this.docClient.send(
       new GetCommand({
-        TableName: USER_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: { alias },
       })
     );
@@ -63,7 +63,7 @@ export class DynamoUserDao implements UserDao {
 
     await this.docClient.send(
       new PutCommand({
-        TableName: USER_TABLE_NAME,
+        TableName: TABLE_NAME,
         Item: userItem,
         // fail if a user with this alias already exists
         ConditionExpression: "attribute_not_exists(alias)",
@@ -74,7 +74,7 @@ export class DynamoUserDao implements UserDao {
   async getPasswordHash(alias: string): Promise<string | null> {
     const result = await this.docClient.send(
       new GetCommand({
-        TableName: USER_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: { alias },
         ProjectionExpression: "passwordHash",
       })
@@ -102,7 +102,7 @@ export class DynamoUserDao implements UserDao {
   ): Promise<void> {
     await this.docClient.send(
       new UpdateCommand({
-        TableName: USER_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: { alias },
         UpdateExpression: `ADD ${attribute} :delta`,
         ExpressionAttributeValues: {

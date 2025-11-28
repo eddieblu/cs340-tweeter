@@ -12,12 +12,12 @@ import { FollowDao } from "../FollowDao";
 import { User } from "tweeter-shared";
 import { UserDao } from "../UserDao";
 
-const FOLLOW_TABLE_NAME = "follow";
-const FOLLOW_INDEX_NAME = "follow_index";
+const TABLE_NAME = "follow";
+const INDEX_NAME = "follow_index";
 
 export class DynamoFollowDao implements FollowDao {
   private readonly docClient: DynamoDBDocumentClient;
-  private readonly userDao: UserDao;
+  private readonly userDao: UserDao; 
 
   // constructor allows passing in docClient when testing/mocking
   constructor(userDao: UserDao, docClient?: DynamoDBDocumentClient) {
@@ -37,7 +37,7 @@ export class DynamoFollowDao implements FollowDao {
 
     await this.docClient.send(
       new PutCommand({
-        TableName: FOLLOW_TABLE_NAME,
+        TableName: TABLE_NAME,
         Item: followItem,
         ConditionExpression:
           "attribute_not_exists(follower_alias) AND attribute_not_exists(followee_alias)",
@@ -51,7 +51,7 @@ export class DynamoFollowDao implements FollowDao {
   ): Promise<void> {
     await this.docClient.send(
       new DeleteCommand({
-        TableName: FOLLOW_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: {
           follower_alias: followerAlias,
           followee_alias: followeeAlias,
@@ -66,7 +66,7 @@ export class DynamoFollowDao implements FollowDao {
   ): Promise<boolean> {
     const result = await this.docClient.send(
       new GetCommand({
-        TableName: FOLLOW_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: {
           follower_alias: followerAlias,
           followee_alias: followeeAlias,
@@ -85,8 +85,8 @@ export class DynamoFollowDao implements FollowDao {
     lastFollowerAlias: string | null
   ): Promise<{ followers: User[]; hasMore: boolean }> {
     const queryInput: QueryCommandInput = {
-      TableName: FOLLOW_TABLE_NAME,
-      IndexName: FOLLOW_INDEX_NAME,
+      TableName: TABLE_NAME,
+      IndexName: INDEX_NAME,
       KeyConditionExpression: "followee_alias = :targetAlias",
       ExpressionAttributeValues: {
         ":targetAlias": targetAlias,
@@ -115,7 +115,7 @@ export class DynamoFollowDao implements FollowDao {
     lastFolloweeAlias: string | null
   ): Promise<{ followees: User[]; hasMore: boolean }> {
     const queryInput: QueryCommandInput = {
-      TableName: FOLLOW_TABLE_NAME,
+      TableName: TABLE_NAME,
       KeyConditionExpression: "follower_alias = :follower",
       ExpressionAttributeValues: {
         ":follower": followerAlias,
@@ -137,7 +137,7 @@ export class DynamoFollowDao implements FollowDao {
 
     return { followees: users, hasMore };
   }
-  
+
   private async getUsersPageForQuery(
     queryInput: QueryCommandInput,
     aliasAttribute: "follower_alias" | "followee_alias"
