@@ -9,45 +9,51 @@ export class FollowService implements Service {
   private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
   private readonly authorizationService = new AuthorizationService();
 
-  public async loadMoreFollowees(
+  async loadMoreFollowees(
     token: string,
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    await this.authorizationService.authorize(token);
-
-    const lastFolloweeAlias = lastItem ? lastItem.alias : null;
-
-    const { followees, hasMore } = await this.followDao.getFolloweesPage(
+    return this.loadMoreUsers(
+      token,
       userAlias,
       pageSize,
-      lastFolloweeAlias
+      lastItem,
+      async (alias, size, last) => {
+        const { followees, hasMore } = await this.followDao.getFolloweesPage(
+          alias,
+          size,
+          last
+        );
+        return { users: followees, hasMore };
+      }
     );
-
-    return [this.toUserDtos(followees), hasMore];
   }
 
-  public async loadMoreFollowers(
+  async loadMoreFollowers(
     token: string,
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    await this.authorizationService.authorize(token);
-
-    const lastFollowerAlias = lastItem ? lastItem.alias : null;
-
-    const { followers, hasMore } = await this.followDao.getFollowersPage(
+    return this.loadMoreUsers(
+      token,
       userAlias,
       pageSize,
-      lastFollowerAlias
+      lastItem,
+      async (alias, size, last) => {
+        const { followers, hasMore } = await this.followDao.getFollowersPage(
+          alias,
+          size,
+          last
+        );
+        return { users: followers, hasMore };
+      }
     );
-
-    return [this.toUserDtos(followers), hasMore];
   }
 
-  public async getIsFollowerStatus(
+  async getIsFollowerStatus(
     token: string,
     userAlias: string,
     selectedUserAlias: string
@@ -57,10 +63,7 @@ export class FollowService implements Service {
     return this.followDao.isFollower(userAlias, selectedUserAlias);
   }
 
-  public async getFolloweeCount(
-    token: string,
-    userAlias: string
-  ): Promise<number> {
+  async getFolloweeCount(token: string, userAlias: string): Promise<number> {
     await this.authorizationService.authorize(token);
 
     const followeeCount = await this.userDao.getFolloweeCount(userAlias);
@@ -68,10 +71,7 @@ export class FollowService implements Service {
     return followeeCount;
   }
 
-  public async getFollowerCount(
-    token: string,
-    userAlias: string
-  ): Promise<number> {
+  async getFollowerCount(token: string, userAlias: string): Promise<number> {
     await this.authorizationService.authorize(token);
 
     const followerCount = await this.userDao.getFollowerCount(userAlias);
@@ -79,59 +79,72 @@ export class FollowService implements Service {
     return followerCount;
   }
 
-  public async follow(
+  async follow(
     token: string,
     userToFollowAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
-    const followerAlias = await this.authorizationService.authorize(token);
-
-    const targetUser = await this.userDao.getUser(userToFollowAlias);
-    if (!targetUser) {
-      throw new Error("User to follow not found");
-    }
-
-    await this.followDao.createFollow(followerAlias, userToFollowAlias);
-
-    await this.userDao.incrementFollowerCount(userToFollowAlias, 1);
-    await this.userDao.incrementFolloweeCount(followerAlias, 1);
-
-    const followerCount = await this.userDao.getFollowerCount(
-      userToFollowAlias
+    return this.modifyFollow(token, userToFollowAlias, 1, (follower, target) =>
+      this.followDao.createFollow(follower, target)
     );
-    const followeeCount = await this.userDao.getFolloweeCount(
-      userToFollowAlias
-    );
-
-    return [followerCount, followeeCount];
   }
 
-  public async unfollow(
+  async unfollow(
     token: string,
     userToUnfollowAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
-    const followerAlias = await this.authorizationService.authorize(token);
-
-    const targetUser = await this.userDao.getUser(userToUnfollowAlias);
-    if (!targetUser) {
-      throw new Error("User to unfollow not found");
-    }
-
-    await this.followDao.deleteFollow(followerAlias, userToUnfollowAlias);
-
-    await this.userDao.incrementFollowerCount(userToUnfollowAlias, -1);
-    await this.userDao.incrementFolloweeCount(followerAlias, -1);
-
-    const followerCount = await this.userDao.getFollowerCount(
-      userToUnfollowAlias
+    return this.modifyFollow(
+      token,
+      userToUnfollowAlias,
+      -1,
+      (follower, target) => this.followDao.deleteFollow(follower, target)
     );
-    const followeeCount = await this.userDao.getFolloweeCount(
-      userToUnfollowAlias
-    );
-
-    return [followerCount, followeeCount];
   }
 
   private toUserDtos(users: User[]): UserDto[] {
     return users.map((u) => u.dto);
+  }
+
+  private async loadMoreUsers(
+    token: string,
+    userAlias: string,
+    pageSize: number,
+    lastItem: UserDto | null,
+    loader: (
+      userAlias: string,
+      pageSize: number,
+      lastAlias: string | null
+    ) => Promise<{ users: User[]; hasMore: boolean }>
+  ): Promise<[UserDto[], boolean]> {
+    await this.authorizationService.authorize(token);
+
+    const lastAlias = lastItem ? lastItem.alias : null;
+
+    const { users, hasMore } = await loader(userAlias, pageSize, lastAlias);
+
+    return [this.toUserDtos(users), hasMore];
+  }
+
+  private async modifyFollow(
+    token: string,
+    targetAlias: string,
+    delta: 1 | -1,
+    action: (follower: string, target: string) => Promise<void>
+  ): Promise<[number, number]> {
+    const followerAlias = await this.authorizationService.authorize(token);
+
+    const user = await this.userDao.getUser(targetAlias);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await action(followerAlias, targetAlias);
+
+    await this.userDao.incrementFollowerCount(targetAlias, delta);
+    await this.userDao.incrementFolloweeCount(followerAlias, delta);
+
+    const followerCount = await this.userDao.getFollowerCount(targetAlias);
+    const followeeCount = await this.userDao.getFolloweeCount(targetAlias);
+
+    return [followerCount, followeeCount];
   }
 }

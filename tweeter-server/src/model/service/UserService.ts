@@ -9,7 +9,7 @@ export class UserService implements Service {
     DaoFactoryProvider.getFactory().getAuthTokenDao();
   private readonly authorizationService = new AuthorizationService();
 
-  public async getUser(
+  async getUser(
     token: string,
     userAlias: string
   ): Promise<UserDto> {
@@ -22,7 +22,7 @@ export class UserService implements Service {
     return user.dto;
   }
 
-  public async login(
+  async login(
     alias: string,
     password: string
   ): Promise<[UserDto, AuthTokenDto]> {
@@ -38,7 +38,7 @@ export class UserService implements Service {
     return [user.dto, authToken.dto];
   }
 
-  public async register(
+  async register(
     firstName: string,
     lastName: string,
     alias: string,
@@ -64,7 +64,7 @@ export class UserService implements Service {
     return [newUser.dto, authToken.dto];
   }
 
-  public async logout(authToken: string): Promise<void> {
+  async logout(authToken: string): Promise<void> {
     await this.authTokenDao.deleteAuthToken(authToken);
   }
 

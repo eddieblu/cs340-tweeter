@@ -2,10 +2,7 @@ import { AuthToken, Status, FakeData, StatusDto } from "tweeter-shared";
 import { Service } from "./Service";
 
 export class StatusService implements Service {
-  /**
-   * POST /story/list
-   */
-  public async loadMoreStoryItems(
+  async loadMoreStoryItems(
     token: string,
     userAlias: string,
     pageSize: number,
@@ -15,10 +12,7 @@ export class StatusService implements Service {
     return this.getFakeData(lastItem, pageSize);
   }
 
-  /**
-   * POST /feed/list
-   */
-  public async loadMoreFeedItems(
+  async loadMoreFeedItems(
     token: string,
     userAlias: string,
     pageSize: number,
@@ -28,16 +22,10 @@ export class StatusService implements Service {
     return this.getFakeData(lastItem, pageSize);
   }
 
-  /**
-   * POST /status/post
-   */
-  public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
+  async postStatus(token: string, newStatus: StatusDto): Promise<void> {
     // TODO: Call the server to post the status
   }
 
-  //
-  // Helper Functions
-  //
   private async getFakeData(
     lastItem: StatusDto | null,
     pageSize: number

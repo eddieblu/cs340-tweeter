@@ -89,11 +89,11 @@ export class DynamoUserDao implements UserDao {
   }
 
   async incrementFollowerCount(alias: string, delta: number): Promise<void> {
-    return this.updateCount(alias, "followerCount", delta);
+    this.updateCount(alias, "followerCount", delta);
   }
 
   async incrementFolloweeCount(alias: string, delta: number): Promise<void> {
-    return this.updateCount(alias, "followeeCount", delta);
+    this.updateCount(alias, "followeeCount", delta);
   }
 
   async getFollowerCount(alias: string): Promise<number> {
@@ -114,6 +114,7 @@ export class DynamoUserDao implements UserDao {
         TableName: TABLE_NAME,
         Key: { alias },
         UpdateExpression: `ADD ${attribute} :delta`,
+        ConditionExpression: "attribute_exists(alias)",
         ExpressionAttributeValues: {
           ":delta": delta,
         },
@@ -134,7 +135,7 @@ export class DynamoUserDao implements UserDao {
     );
 
     if (!result.Item) {
-      throw new Error("User not found");
+      return 0;
     }
 
     const item = result.Item as any;
