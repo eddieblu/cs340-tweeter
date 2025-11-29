@@ -1,13 +1,27 @@
-import { FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
+import {
+  UserDto,
+  AuthTokenDto,
+  AuthToken,
+  User,
+} from "tweeter-shared";
 import { Service } from "./Service";
+import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
 
 export class UserService implements Service {
+  private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
+  private readonly authTokenDao =
+    DaoFactoryProvider.getFactory().getAuthTokenDao();
+
   public async getUser(
     token: string,
     userAlias: string
   ): Promise<UserDto | null> {
-    // TODO: Replace with the result of calling server
-    const user = FakeData.instance.findUserByAlias(userAlias);
+    const storedToken = await this.authTokenDao.getAuthToken(token);
+    if (!storedToken) {
+      throw new Error("Invalid or expired auth token");
+    }
+
+    const user = await this.userDao.getUser(userAlias);
     return user?.dto || null;
   }
 
@@ -15,13 +29,14 @@ export class UserService implements Service {
     alias: string,
     password: string
   ): Promise<[UserDto, AuthTokenDto]> {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-    const authToken = FakeData.instance.authToken;
-
-    if (user === null) {
+    const user = await this.userDao.getUser(alias);
+    if (!user) {
       throw new Error("Invalid alias or password");
     }
+
+    // bcrypt.compare() will go here later for password check
+
+    const authToken = this.createAndPersistAuthToken();
 
     return [user.dto, authToken.dto];
   }
@@ -34,20 +49,31 @@ export class UserService implements Service {
     imageStringBase64: string,
     imageFileExtension: string
   ): Promise<[UserDto, AuthTokenDto]> {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-    const authToken = FakeData.instance.authToken;
-
-    if (user === null || authToken === null) {
-      throw new Error("Invalid registration");
+    const existing = await this.userDao.getUser(alias);
+    if (existing) {
+      throw new Error("Alias already exists");
     }
 
-    return [user.dto, authToken.dto];
+    const imageUrl = ""; // TODO: replace with real S3 URL in S3 step
+
+    const newUser = new User(firstName, lastName, alias, imageUrl);
+
+    const passwordHash = password; // TODO: replace with bcrypt hash in bcrypt step
+
+    await this.userDao.createUser(newUser, passwordHash);
+
+    const authToken = this.createAndPersistAuthToken();
+
+    return [newUser.dto, authToken.dto];
   }
 
   public async logout(authToken: string): Promise<void> {
-    // M3: no-op.
-    // M4: actually invalidate token in DB.
+    await this.authTokenDao.deleteAuthToken(authToken);
+  }
+
+  private createAndPersistAuthToken(): AuthToken {
+    const authToken = AuthToken.Generate();
+    this.authTokenDao.createAuthToken(authToken);
+    return authToken;
   }
 }
-

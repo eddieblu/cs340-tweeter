@@ -14,3 +14,5 @@ export const handler = async (
     user,
   };
 };
+
+// TODO: wrap it in a try/catch and set success/message ?
