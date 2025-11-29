@@ -1,7 +1,13 @@
 import { User, FakeData, UserDto } from "tweeter-shared";
 import { Service } from "./Service";
+import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
 
 export class FollowService implements Service {
+  private readonly followDao = DaoFactoryProvider.getFactory().getFollowDao();
+  private readonly authTokenDao =
+    DaoFactoryProvider.getFactory().getAuthTokenDao();
+  private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
+
   /**
    * POST /followee/list
    */

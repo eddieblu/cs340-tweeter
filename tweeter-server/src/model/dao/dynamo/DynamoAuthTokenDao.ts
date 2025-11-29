@@ -19,9 +19,10 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
       docClient ?? DynamoDBDocumentClient.from(new DynamoDBClient({}));
   }
 
-  async createAuthToken(newAuthToken: AuthToken): Promise<void> {
+  async createAuthToken(newAuthToken: AuthToken, alias: string): Promise<void> {
     const authTokenItem = {
       token: newAuthToken.token,
+      alias: alias,
       timestamp: newAuthToken.timestamp,
     };
 
@@ -48,11 +49,29 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
     const item = result.Item as {
       token: string;
       timestamp: number;
+      alias?: string; // stored but not needed to recreate AuthToken
     };
 
     const authToken = new AuthToken(item.token, item.timestamp);
 
     return authToken;
+  }
+
+  async getAliasForToken(token: string): Promise<string | null> {
+    const result = await this.docClient.send(
+      new GetCommand({
+        TableName: TABLE_NAME,
+        Key: { token },
+        ProjectionExpression: "alias",
+      })
+    );
+
+    if (!result.Item) {
+      return null;
+    }
+
+    const item = result.Item as { alias?: string };
+    return item.alias ?? null;
   }
 
   async deleteAuthToken(token: string): Promise<void> {

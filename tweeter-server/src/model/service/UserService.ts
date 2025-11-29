@@ -1,17 +1,19 @@
 import { UserDto, AuthTokenDto, AuthToken, User } from "tweeter-shared";
 import { Service } from "./Service";
 import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
+import { AuthorizationService } from "./AuthorizationService";
 
 export class UserService implements Service {
   private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
   private readonly authTokenDao =
     DaoFactoryProvider.getFactory().getAuthTokenDao();
+  private readonly authorizationService = new AuthorizationService();
 
   public async getUser(
     token: string,
     userAlias: string
-  ): Promise<UserDto | null> {
-    await this.validateToken(token);
+  ): Promise<UserDto> {
+    await this.authorizationService.authorize(token);
 
     const user = await this.userDao.getUser(userAlias);
     if (!user) {
@@ -31,7 +33,7 @@ export class UserService implements Service {
 
     // bcrypt.compare() will go here later for password check
 
-    const authToken = await this.createAndPersistAuthToken();
+    const authToken = await this.createAndPersistAuthToken(alias);
 
     return [user.dto, authToken.dto];
   }
@@ -57,7 +59,7 @@ export class UserService implements Service {
 
     await this.userDao.createUser(newUser, passwordHash);
 
-    const authToken = await this.createAndPersistAuthToken();
+    const authToken = await this.createAndPersistAuthToken(alias);
 
     return [newUser.dto, authToken.dto];
   }
@@ -66,16 +68,9 @@ export class UserService implements Service {
     await this.authTokenDao.deleteAuthToken(authToken);
   }
 
-  private async createAndPersistAuthToken(): Promise<AuthToken> {
+  private async createAndPersistAuthToken(alias: string): Promise<AuthToken> {
     const authToken = AuthToken.Generate();
-    await this.authTokenDao.createAuthToken(authToken);
+    await this.authTokenDao.createAuthToken(authToken, alias);
     return authToken;
-  }
-
-  private async validateToken(token: string): Promise<void> {
-    const storedToken = await this.authTokenDao.getAuthToken(token);
-    if (!storedToken) {
-      throw new Error("Invalid or expired auth token");
-    }
   }
 }
