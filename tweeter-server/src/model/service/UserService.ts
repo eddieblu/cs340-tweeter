@@ -1,9 +1,4 @@
-import {
-  UserDto,
-  AuthTokenDto,
-  AuthToken,
-  User,
-} from "tweeter-shared";
+import { UserDto, AuthTokenDto, AuthToken, User } from "tweeter-shared";
 import { Service } from "./Service";
 import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
 
@@ -16,13 +11,13 @@ export class UserService implements Service {
     token: string,
     userAlias: string
   ): Promise<UserDto | null> {
-    const storedToken = await this.authTokenDao.getAuthToken(token);
-    if (!storedToken) {
-      throw new Error("Invalid or expired auth token");
-    }
+    await this.validateToken(token);
 
     const user = await this.userDao.getUser(userAlias);
-    return user?.dto || null;
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user.dto;
   }
 
   public async login(
@@ -36,7 +31,7 @@ export class UserService implements Service {
 
     // bcrypt.compare() will go here later for password check
 
-    const authToken = this.createAndPersistAuthToken();
+    const authToken = await this.createAndPersistAuthToken();
 
     return [user.dto, authToken.dto];
   }
@@ -62,7 +57,7 @@ export class UserService implements Service {
 
     await this.userDao.createUser(newUser, passwordHash);
 
-    const authToken = this.createAndPersistAuthToken();
+    const authToken = await this.createAndPersistAuthToken();
 
     return [newUser.dto, authToken.dto];
   }
@@ -71,9 +66,16 @@ export class UserService implements Service {
     await this.authTokenDao.deleteAuthToken(authToken);
   }
 
-  private createAndPersistAuthToken(): AuthToken {
+  private async createAndPersistAuthToken(): Promise<AuthToken> {
     const authToken = AuthToken.Generate();
-    this.authTokenDao.createAuthToken(authToken);
+    await this.authTokenDao.createAuthToken(authToken);
     return authToken;
+  }
+
+  private async validateToken(token: string): Promise<void> {
+    const storedToken = await this.authTokenDao.getAuthToken(token);
+    if (!storedToken) {
+      throw new Error("Invalid or expired auth token");
+    }
   }
 }
