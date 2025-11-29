@@ -1,4 +1,3 @@
-import { AuthToken } from "tweeter-shared";
 import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
 import { Service } from "./Service";
 

@@ -84,7 +84,8 @@ export class DynamoUserDao implements UserDao {
       return null;
     }
 
-    return result.Item.passwordHash ?? null;
+    const item = result.Item as { passwordHash?: string };
+    return item.passwordHash ?? null;
   }
 
   async incrementFollowerCount(alias: string, delta: number): Promise<void> {
@@ -93,6 +94,14 @@ export class DynamoUserDao implements UserDao {
 
   async incrementFolloweeCount(alias: string, delta: number): Promise<void> {
     return this.updateCount(alias, "followeeCount", delta);
+  }
+
+  async getFollowerCount(alias: string): Promise<number> {
+    return this.getUserCount(alias, "followerCount");
+  }
+
+  async getFolloweeCount(alias: string): Promise<number> {
+    return this.getUserCount(alias, "followeeCount");
   }
 
   private async updateCount(
@@ -110,5 +119,25 @@ export class DynamoUserDao implements UserDao {
         },
       })
     );
+  }
+
+  private async getUserCount(
+    alias: string,
+    field: "followerCount" | "followeeCount"
+  ): Promise<number> {
+    const result = await this.docClient.send(
+      new GetCommand({
+        TableName: TABLE_NAME,
+        Key: { alias },
+        ProjectionExpression: field,
+      })
+    );
+
+    if (!result.Item) {
+      throw new Error("User not found");
+    }
+
+    const item = result.Item as any;
+    return item[field] ?? 0;
   }
 }

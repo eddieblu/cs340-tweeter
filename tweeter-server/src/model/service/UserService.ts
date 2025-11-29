@@ -31,7 +31,7 @@ export class UserService implements Service {
       throw new Error("Invalid alias or password");
     }
 
-    // bcrypt.compare() will go here later for password check
+    // TODO: bcrypt.compare() will go here later for password check
 
     const authToken = await this.createAndPersistAuthToken(alias);
 

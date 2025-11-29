@@ -10,4 +10,8 @@ export interface UserDao {
   incrementFollowerCount(alias: string, delta: number): Promise<void>;
   
   incrementFolloweeCount(alias: string, delta: number): Promise<void>;
+
+  getFollowerCount(alias: string): Promise<number>;
+
+  getFolloweeCount(alias: string): Promise<number>;
 }

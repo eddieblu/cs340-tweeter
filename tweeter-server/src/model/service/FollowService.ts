@@ -1,129 +1,137 @@
-import { User, FakeData, UserDto } from "tweeter-shared";
+import { User, UserDto } from "tweeter-shared";
+
 import { Service } from "./Service";
 import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
+import { AuthorizationService } from "./AuthorizationService";
 
 export class FollowService implements Service {
   private readonly followDao = DaoFactoryProvider.getFactory().getFollowDao();
-  private readonly authTokenDao =
-    DaoFactoryProvider.getFactory().getAuthTokenDao();
   private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
+  private readonly authorizationService = new AuthorizationService();
 
-  /**
-   * POST /followee/list
-   */
   public async loadMoreFollowees(
     token: string,
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakeData(lastItem, pageSize, userAlias);
+    await this.authorizationService.authorize(token);
+
+    const lastFolloweeAlias = lastItem ? lastItem.alias : null;
+
+    const { followees, hasMore } = await this.followDao.getFolloweesPage(
+      userAlias,
+      pageSize,
+      lastFolloweeAlias
+    );
+
+    return [this.toUserDtos(followees), hasMore];
   }
 
-  /**
-   * POST /follower/list
-   */
   public async loadMoreFollowers(
     token: string,
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakeData(lastItem, pageSize, userAlias);
+    await this.authorizationService.authorize(token);
+
+    const lastFollowerAlias = lastItem ? lastItem.alias : null;
+
+    const { followers, hasMore } = await this.followDao.getFollowersPage(
+      userAlias,
+      pageSize,
+      lastFollowerAlias
+    );
+
+    return [this.toUserDtos(followers), hasMore];
   }
 
-  /**
-   * POST /follow/is-follower
-   */
   public async getIsFollowerStatus(
     token: string,
     userAlias: string,
     selectedUserAlias: string
   ): Promise<boolean> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.isFollower();
+    await this.authorizationService.authorize(token);
+
+    return this.followDao.isFollower(userAlias, selectedUserAlias);
   }
 
-  /**
-   * POST /followee/count
-   */
   public async getFolloweeCount(
     token: string,
     userAlias: string
   ): Promise<number> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFolloweeCount(userAlias);
+    await this.authorizationService.authorize(token);
+
+    const followeeCount = await this.userDao.getFolloweeCount(userAlias);
+
+    return followeeCount;
   }
 
-  /**
-   * POST /follower/count
-   */
   public async getFollowerCount(
     token: string,
     userAlias: string
   ): Promise<number> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFollowerCount(userAlias);
+    await this.authorizationService.authorize(token);
+
+    const followerCount = await this.userDao.getFollowerCount(userAlias);
+
+    return followerCount;
   }
 
-  /**
-   * POST /follow/follow
-   */
   public async follow(
     token: string,
     userToFollowAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the follow message. Remove when connected to the server
-    // await new Promise((f) => setTimeout(f, 2000));
+    const followerAlias = await this.authorizationService.authorize(token);
 
-    // TODO: Call the server
+    const targetUser = await this.userDao.getUser(userToFollowAlias);
+    if (!targetUser) {
+      throw new Error("User to follow not found");
+    }
 
-    const followerCount = await this.getFollowerCount(token, userToFollowAlias);
-    const followeeCount = await this.getFolloweeCount(token, userToFollowAlias);
+    await this.followDao.createFollow(followerAlias, userToFollowAlias);
+
+    await this.userDao.incrementFollowerCount(userToFollowAlias, 1);
+    await this.userDao.incrementFolloweeCount(followerAlias, 1);
+
+    const followerCount = await this.userDao.getFollowerCount(
+      userToFollowAlias
+    );
+    const followeeCount = await this.userDao.getFolloweeCount(
+      userToFollowAlias
+    );
 
     return [followerCount, followeeCount];
   }
 
-  /**
-   * POST /follow/unfollow
-   */
   public async unfollow(
     token: string,
     userToUnfollowAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    // await new Promise((f) => setTimeout(f, 2000));
+    const followerAlias = await this.authorizationService.authorize(token);
 
-    // TODO: Call the server
+    const targetUser = await this.userDao.getUser(userToUnfollowAlias);
+    if (!targetUser) {
+      throw new Error("User to unfollow not found");
+    }
 
-    const followerCount = await this.getFollowerCount(
-      token,
+    await this.followDao.deleteFollow(followerAlias, userToUnfollowAlias);
+
+    await this.userDao.incrementFollowerCount(userToUnfollowAlias, -1);
+    await this.userDao.incrementFolloweeCount(followerAlias, -1);
+
+    const followerCount = await this.userDao.getFollowerCount(
       userToUnfollowAlias
     );
-    const followeeCount = await this.getFolloweeCount(
-      token,
+    const followeeCount = await this.userDao.getFolloweeCount(
       userToUnfollowAlias
     );
 
     return [followerCount, followeeCount];
   }
 
-  //
-  // Helper Functions
-  //
-  private async getFakeData(
-    lastItem: UserDto | null,
-    pageSize: number,
-    userAlias: string
-  ): Promise<[UserDto[], boolean]> {
-    const [items, hasMore] = FakeData.instance.getPageOfUsers(
-      User.fromDto(lastItem),
-      pageSize,
-      userAlias
-    );
-    const dtos = items.map((user) => user.dto);
-    return [dtos, hasMore];
+  private toUserDtos(users: User[]): UserDto[] {
+    return users.map((u) => u.dto);
   }
 }
