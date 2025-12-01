@@ -1,7 +1,9 @@
 import { UserDto, AuthTokenDto, AuthToken, User } from "tweeter-shared";
 import { Service } from "./Service";
-import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
 import { AuthorizationService } from "./AuthorizationService";
+import { DaoFactoryProvider } from "../dao/DaoFactoryProvider";
+
+import bcrypt from "bcryptjs";
 
 export class UserService implements Service {
   private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
@@ -9,10 +11,7 @@ export class UserService implements Service {
     DaoFactoryProvider.getFactory().getAuthTokenDao();
   private readonly authorizationService = new AuthorizationService();
 
-  async getUser(
-    token: string,
-    userAlias: string
-  ): Promise<UserDto> {
+  async getUser(token: string, userAlias: string): Promise<UserDto> {
     await this.authorizationService.authorize(token);
 
     const user = await this.userDao.getUser(userAlias);
@@ -31,7 +30,15 @@ export class UserService implements Service {
       throw new Error("Invalid alias or password");
     }
 
-    // TODO: bcrypt.compare() will go here later for password check
+    const passwordHash = await this.userDao.getPasswordHash(alias);
+    if (!passwordHash) {
+      throw new Error("Invalid alias or password");
+    }
+
+    const isMatch = await bcrypt.compare(password, passwordHash);
+    if (!isMatch) {
+      throw new Error("Invalid alias or password");
+    }
 
     const authToken = await this.createAndPersistAuthToken(alias);
 
@@ -55,7 +62,7 @@ export class UserService implements Service {
 
     const newUser = new User(firstName, lastName, alias, imageUrl);
 
-    const passwordHash = password; // TODO: replace with bcrypt hash in bcrypt step
+    const passwordHash = await bcrypt.hash(password, 10);
 
     await this.userDao.createUser(newUser, passwordHash);
 

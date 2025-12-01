@@ -20,10 +20,8 @@ export class DynamoStoryDao
       author_alias: user.alias, // PK
       timestamp: status.timestamp, // SK
 
-      // status content
       post: status.post,
 
-      // denormalized user info
       user_firstName: user.firstName,
       user_lastName: user.lastName,
       user_imageUrl: user.imageUrl,
