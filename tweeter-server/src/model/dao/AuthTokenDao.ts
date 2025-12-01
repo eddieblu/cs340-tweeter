@@ -1,11 +1,13 @@
 import { AuthToken } from "tweeter-shared";
 
 export interface AuthTokenDao {
-    createAuthToken(authToken: AuthToken, alias: string): Promise<void>;
+  createAuthToken(authToken: AuthToken, alias: string): Promise<void>;
 
-    getAuthToken(token: string): Promise<AuthToken | null>;
+  getAuthToken(token: string): Promise<AuthToken | null>;
 
-    getAliasForToken(token: string): Promise<string | null>;
+  getAliasForToken(token: string): Promise<string | null>;
 
-    deleteAuthToken(token: string): Promise<void>;
+  updateTimestamp(token: string, now: number): Promise<void>;
+
+  deleteAuthToken(token: string): Promise<void>;
 }

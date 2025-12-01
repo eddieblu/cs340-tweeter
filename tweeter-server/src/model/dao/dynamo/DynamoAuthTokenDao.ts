@@ -5,6 +5,7 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
+  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
@@ -19,7 +20,10 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
       docClient ?? DynamoDBDocumentClient.from(new DynamoDBClient({}));
   }
 
-  async createAuthToken(newAuthToken: AuthToken, alias: string): Promise<void> {
+  public async createAuthToken(
+    newAuthToken: AuthToken,
+    alias: string
+  ): Promise<void> {
     const authTokenItem = {
       token: newAuthToken.token,
       alias: alias,
@@ -34,7 +38,7 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
     );
   }
 
-  async getAuthToken(token: string): Promise<AuthToken | null> {
+  public async getAuthToken(token: string): Promise<AuthToken | null> {
     const result = await this.docClient.send(
       new GetCommand({
         TableName: TABLE_NAME,
@@ -57,7 +61,7 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
     return authToken;
   }
 
-  async getAliasForToken(token: string): Promise<string | null> {
+  public async getAliasForToken(token: string): Promise<string | null> {
     const result = await this.docClient.send(
       new GetCommand({
         TableName: TABLE_NAME,
@@ -74,7 +78,26 @@ export class DynamoAuthTokenDao implements AuthTokenDao {
     return item.alias ?? null;
   }
 
-  async deleteAuthToken(token: string): Promise<void> {
+  public async updateTimestamp(
+    token: string,
+    newTimestamp: number
+  ): Promise<void> {
+    await this.docClient.send(
+      new UpdateCommand({
+        TableName: TABLE_NAME,
+        Key: { token },
+        UpdateExpression: "SET #ts = :timestamp",
+        ExpressionAttributeNames: {
+          "#ts": "timestamp",
+        },
+        ExpressionAttributeValues: {
+          ":timestamp": newTimestamp,
+        },
+      })
+    );
+  }
+
+  public async deleteAuthToken(token: string): Promise<void> {
     await this.docClient.send(
       new DeleteCommand({
         TableName: TABLE_NAME,

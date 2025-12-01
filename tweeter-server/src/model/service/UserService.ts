@@ -65,6 +65,7 @@ export class UserService implements Service {
   }
 
   async logout(authToken: string): Promise<void> {
+    await this.authorizationService.authorize(authToken);
     await this.authTokenDao.deleteAuthToken(authToken);
   }
 
