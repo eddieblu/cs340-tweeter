@@ -2,12 +2,12 @@ import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 
 import { Status, User } from "tweeter-shared";
 import { StoryDao } from "../StoryDao";
-import { DynamoStatusPageDaoBase } from "./base/DynamoStatusPageDao";
+import { DynamoStatusPageDao } from "./base/DynamoStatusPageDao";
 
 const TABLE_NAME = "story";
 
 export class DynamoStoryDao
-  extends DynamoStatusPageDaoBase
+  extends DynamoStatusPageDao
   implements StoryDao
 {
   constructor(docClient?: DynamoDBDocumentClient) {

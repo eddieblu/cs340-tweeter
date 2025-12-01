@@ -134,7 +134,7 @@ export class FollowService implements Service {
 
     const user = await this.userDao.getUser(targetAlias);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("bad-request: user not found");
     }
 
     await action(followerAlias, targetAlias);

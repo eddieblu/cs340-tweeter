@@ -179,7 +179,7 @@ export class ServerFacade {
 
     if (!response.success) {
       console.error(response);
-      throw new Error("Invalid alias or password");
+      throw new Error(response.message ?? "Invalid alias or password");
     }
 
     const user = User.fromDto(response.user);

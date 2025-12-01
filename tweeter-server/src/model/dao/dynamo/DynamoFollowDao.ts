@@ -17,7 +17,7 @@ const INDEX_NAME = "follow_index";
 
 export class DynamoFollowDao implements FollowDao {
   private readonly docClient: DynamoDBDocumentClient;
-  private readonly userDao: UserDao; 
+  private readonly userDao: UserDao;
 
   // constructor allows passing in docClient when testing/mocking
   constructor(userDao: UserDao, docClient?: DynamoDBDocumentClient) {
@@ -26,7 +26,7 @@ export class DynamoFollowDao implements FollowDao {
       docClient ?? DynamoDBDocumentClient.from(new DynamoDBClient({}));
   }
 
-  async createFollow(
+  public async createFollow(
     followerAlias: string,
     followeeAlias: string
   ): Promise<void> {
@@ -45,7 +45,7 @@ export class DynamoFollowDao implements FollowDao {
     );
   }
 
-  async deleteFollow(
+  public async deleteFollow(
     followerAlias: string,
     followeeAlias: string
   ): Promise<void> {
@@ -60,7 +60,7 @@ export class DynamoFollowDao implements FollowDao {
     );
   }
 
-  async isFollower(
+  public async isFollower(
     followerAlias: string,
     followeeAlias: string
   ): Promise<boolean> {
@@ -79,7 +79,7 @@ export class DynamoFollowDao implements FollowDao {
     return !!result.Item;
   }
 
-  async getFollowersPage(
+  public async getFollowersPage(
     targetAlias: string,
     pageSize: number,
     lastFollowerAlias: string | null
@@ -109,7 +109,7 @@ export class DynamoFollowDao implements FollowDao {
     return { followers: users, hasMore };
   }
 
-  async getFolloweesPage(
+  public async getFolloweesPage(
     followerAlias: string,
     pageSize: number,
     lastFolloweeAlias: string | null
@@ -136,6 +136,21 @@ export class DynamoFollowDao implements FollowDao {
     );
 
     return { followees: users, hasMore };
+  }
+
+  public async getFollowerAliases(alias: string): Promise<string[]> {
+    const queryInput: QueryCommandInput = {
+      TableName: TABLE_NAME,
+      IndexName: INDEX_NAME,
+      KeyConditionExpression: "followee_alias = :targetAlias",
+      ExpressionAttributeValues: {
+        ":targetAlias": alias,
+      },
+    };
+
+    const result = await this.docClient.send(new QueryCommand(queryInput));
+
+    return result.Items?.map((item) => item.follower_alias as string) ?? [];
   }
 
   private async getUsersPageForQuery(

@@ -2,11 +2,11 @@ import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 
 import { Status, User } from "tweeter-shared";
 import { FeedDao } from "../FeedDao";
-import { DynamoStatusPageDaoBase } from "./base/DynamoStatusPageDao";
+import { DynamoStatusPageDao } from "./base/DynamoStatusPageDao";
 
 const TABLE_NAME = "feed";
 
-export class DynamoFeedDao extends DynamoStatusPageDaoBase implements FeedDao {
+export class DynamoFeedDao extends DynamoStatusPageDao implements FeedDao {
   constructor(docClient?: DynamoDBDocumentClient) {
     super(docClient);
   }
@@ -22,10 +22,8 @@ export class DynamoFeedDao extends DynamoStatusPageDaoBase implements FeedDao {
         receiver_alias: receiverAlias, // PK
         timestamp: status.timestamp, // SK
 
-        // status content
         post: status.post,
 
-        // denormalized author info
         author_firstName: author.firstName,
         author_lastName: author.lastName,
         author_alias: author.alias,

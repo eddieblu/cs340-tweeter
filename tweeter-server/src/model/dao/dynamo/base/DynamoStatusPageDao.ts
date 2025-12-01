@@ -6,7 +6,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { Status } from "tweeter-shared";
 
-export abstract class DynamoStatusPageDaoBase {
+export abstract class DynamoStatusPageDao {
   protected readonly docClient: DynamoDBDocumentClient;
 
   constructor(docClient?: DynamoDBDocumentClient) {

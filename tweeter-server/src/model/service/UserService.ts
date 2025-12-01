@@ -16,7 +16,7 @@ export class UserService implements Service {
 
     const user = await this.userDao.getUser(userAlias);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("bad-request: user not found");
     }
     return user.dto;
   }
@@ -27,17 +27,17 @@ export class UserService implements Service {
   ): Promise<[UserDto, AuthTokenDto]> {
     const user = await this.userDao.getUser(alias);
     if (!user) {
-      throw new Error("Invalid alias or password");
+      throw new Error("bad-request: invalid alias or password");
     }
 
     const passwordHash = await this.userDao.getPasswordHash(alias);
     if (!passwordHash) {
-      throw new Error("Invalid alias or password");
+      throw new Error("bad-request: invalid alias or password");
     }
 
     const isMatch = await bcrypt.compare(password, passwordHash);
     if (!isMatch) {
-      throw new Error("Invalid alias or password");
+      throw new Error("bad-request: invalid alias or password");
     }
 
     const authToken = await this.createAndPersistAuthToken(alias);
@@ -55,7 +55,7 @@ export class UserService implements Service {
   ): Promise<[UserDto, AuthTokenDto]> {
     const existing = await this.userDao.getUser(alias);
     if (existing) {
-      throw new Error("Alias already exists");
+      throw new Error("bad-request: alias already exists");
     }
 
     const imageUrl = ""; // TODO: replace with real S3 URL in S3 step
