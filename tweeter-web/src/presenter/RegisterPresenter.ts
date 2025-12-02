@@ -71,12 +71,17 @@ export class RegisterPresenter extends AuthPresenter<RegisterView> {
     imageFileExtension: string,
     rememberMe: boolean
   ) {
+    let normalizedAlias = alias.trim();
+    if (!normalizedAlias.startsWith("@")) {
+      normalizedAlias = "@" + normalizedAlias;
+    }
+
     await this.doAuthOperation(
       () =>
         this.service.register(
           firstName,
           lastName,
-          alias,
+          normalizedAlias,
           password,
           imageBytes,
           imageFileExtension
