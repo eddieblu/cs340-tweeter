@@ -25,3 +25,6 @@ yarn-error.log*
 /dist
 
 tweeter-version.zip
+
+# notes
+/milestones/m4-docs

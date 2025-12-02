@@ -1,11 +1,15 @@
+import { AuthorizationService } from "../../model/service/AuthorizationService";
 import { FollowService } from "../../model/service/FollowService";
-import { PagedItemRequest,PagedItemResponse, UserDto } from "tweeter-shared";
+import { PagedItemRequest, PagedItemResponse, UserDto } from "tweeter-shared";
 
 export const handler = async (
   request: PagedItemRequest<UserDto>
 ): Promise<PagedItemResponse<UserDto>> => {
+  const authService = new AuthorizationService();
+  await authService.authorize(request.token);
+
   const followService = new FollowService();
-  
+
   const [items, hasMore] = await followService.loadMoreFollowees(
     request.token,
     request.userAlias,

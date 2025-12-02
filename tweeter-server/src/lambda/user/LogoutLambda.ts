@@ -1,17 +1,21 @@
 import { LogoutRequest, LogoutResponse } from "tweeter-shared";
 import { UserService } from "../../model/service/UserService";
+import { AuthorizationService } from "../../model/service/AuthorizationService";
 
 export const handler = async (
   request: LogoutRequest
 ): Promise<LogoutResponse> => {
-    const userService = new UserService();
+  const authService = new AuthorizationService();
+  await authService.authorize(request.token);
 
-    const authToken: string = request.authToken;
+  const userService = new UserService();
 
-    await userService.logout(authToken);
+  const authToken: string = request.token;
 
-    return {
-        success: true,
-        message: "User logged out successfully"
-    }
+  await userService.logout(authToken);
+
+  return {
+    success: true,
+    message: "User logged out successfully",
+  };
 };
