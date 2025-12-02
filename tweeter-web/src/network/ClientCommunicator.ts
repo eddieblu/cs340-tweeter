@@ -35,20 +35,26 @@ export class ClientCommunicator {
       const resp: Response = await fetch(url, params);
 
       if (resp.ok) {
-        // Be careful with the return type here. resp.json() returns Promise<any> which means there is no type checking on response.
         const response: RES = await resp.json();
         return response;
       } else {
-        const error = await resp.json();
-        throw new Error(error.errorMessage);
+        let message = `Request failed with status ${resp.status}`;
+
+        try {
+          const errorBody = await resp.json();
+
+          if (typeof errorBody?.error === "string") {
+            message = errorBody.error;
+          }
+        } catch {
+          // Ignore JSON parsing errors, use default message
+        }
+
+        throw new Error(message);
       }
     } catch (error) {
       console.error(error);
-      throw new Error(
-        `Client communicator ${params.method} failed:\n${
-          (error as Error).message
-        }`
-      );
+      throw error as Error;
     }
   }
 
