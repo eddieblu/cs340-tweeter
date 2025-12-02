@@ -48,8 +48,3 @@ export type { GetUserResponse } from "./model/net/response/GetUserResponse";
 export type { LoginResponse } from "./model/net/response/LoginResponse";
 export type { RegisterResponse } from "./model/net/response/RegisterResponse";
 export type { LogoutResponse } from "./model/net/response/LogoutResponse";
-
-// 
-// Utilities
-//
-export { FakeData } from "./util/FakeData";
