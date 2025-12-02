@@ -495,9 +495,6 @@ Resources:
       FunctionName: registerFunction
       Handler: lambda/user/RegisterLambda.handler
       Policies: *commonPolicies
-      Environment:
-        Variables:
-          PROFILE_IMAGE_BUCKET: !Ref profileImageBucket
       Events:
         PostApi:
           Type: Api
@@ -621,13 +618,3 @@ Resources:
       KeySchema:
         - AttributeName: token
           KeyType: HASH
-
-  # 
-  # S3 Bucket
-  #
-
-  profileImageBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "tweeter-profile-images-${AWS::AccountId}"
-      AccessControl: PublicRead

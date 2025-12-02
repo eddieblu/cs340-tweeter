@@ -4,16 +4,12 @@ import { randomUUID } from "crypto";
 
 export class AwsS3Dao implements S3Dao {
   private readonly s3 = new S3Client({});
-  private readonly bucketName = process.env.PROFILE_IMAGE_BUCKET ?? "";
+  private readonly bucketName = "tweeter-profile-images-340752798304";
 
   public async uploadImage(
     imageStringBase64: string,
     imageFileExtension: string
   ): Promise<string> {
-    if (!this.bucketName) {
-      throw new Error("internal-server-error: S3 bucket not configured");
-    }
-
     const key = `profile-images/${randomUUID()}.${imageFileExtension}`;
 
     const imageAsBytes = Buffer.from(imageStringBase64, "base64");
@@ -23,7 +19,6 @@ export class AwsS3Dao implements S3Dao {
       Key: key,
       Body: imageAsBytes,
       ContentType: this.getMimeType(imageFileExtension),
-      ACL: "public-read",
     });
 
     await this.s3.send(putCommand);
