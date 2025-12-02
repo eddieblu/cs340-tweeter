@@ -8,12 +8,14 @@ import { FeedDao } from "../FeedDao";
 import { FollowDao } from "../FollowDao";
 import { StoryDao } from "../StoryDao";
 import { UserDao } from "../UserDao";
+import { S3Dao } from "../S3Dao";
 
 import { DynamoAuthTokenDao } from "./DynamoAuthTokenDao";
 import { DynamoFeedDao } from "./DynamoFeedDao";
 import { DynamoFollowDao } from "./DynamoFollowDao";
 import { DynamoStoryDao } from "./DynamoStoryDao";
 import { DynamoUserDao } from "./DynamoUserDao";
+import { AwsS3Dao } from "../aws/AwsS3Dao";
 
 export class DynamoDaoFactory implements DaoFactory {
   private readonly docClient: DynamoDBDocumentClient;
@@ -23,6 +25,7 @@ export class DynamoDaoFactory implements DaoFactory {
   private followDao?: FollowDao;
   private storyDao?: StoryDao;
   private userDao?: UserDao;
+  private s3Dao?: S3Dao;
 
   constructor(docClient?: DynamoDBDocumentClient) {
     this.docClient =
@@ -62,5 +65,12 @@ export class DynamoDaoFactory implements DaoFactory {
       this.userDao = new DynamoUserDao(this.docClient);
     }
     return this.userDao;
+  }
+
+  getS3Dao(): S3Dao {
+    if (!this.s3Dao) {
+      this.s3Dao = new AwsS3Dao();
+    }
+    return this.s3Dao;
   }
 }
