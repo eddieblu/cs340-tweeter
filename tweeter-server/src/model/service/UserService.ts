@@ -9,6 +9,7 @@ export class UserService implements Service {
   private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
   private readonly authTokenDao =
     DaoFactoryProvider.getFactory().getAuthTokenDao();
+  private readonly s3Dao = DaoFactoryProvider.getFactory().getS3Dao();
   private readonly authorizationService = new AuthorizationService();
 
   async getUser(token: string, userAlias: string): Promise<UserDto> {
@@ -58,7 +59,10 @@ export class UserService implements Service {
       throw new Error("bad-request: alias already exists");
     }
 
-    const imageUrl = ""; // TODO: replace with real S3 URL in S3 step
+    const imageUrl = await this.s3Dao.uploadImage(
+      imageStringBase64,
+      imageFileExtension
+    );
 
     const newUser = new User(firstName, lastName, alias, imageUrl);
 
