@@ -9,7 +9,7 @@ export class FollowService implements Service {
   private readonly userDao = DaoFactoryProvider.getFactory().getUserDao();
   private readonly authorizationService = new AuthorizationService();
 
-  async loadMoreFollowees(
+  public async loadMoreFollowees(
     token: string,
     userAlias: string,
     pageSize: number,
@@ -31,7 +31,7 @@ export class FollowService implements Service {
     );
   }
 
-  async loadMoreFollowers(
+  public async loadMoreFollowers(
     token: string,
     userAlias: string,
     pageSize: number,
@@ -53,7 +53,7 @@ export class FollowService implements Service {
     );
   }
 
-  async getIsFollowerStatus(
+  public async getIsFollowerStatus(
     token: string,
     userAlias: string,
     selectedUserAlias: string
@@ -63,7 +63,7 @@ export class FollowService implements Service {
     return this.followDao.isFollower(userAlias, selectedUserAlias);
   }
 
-  async getFolloweeCount(token: string, userAlias: string): Promise<number> {
+  public async getFolloweeCount(token: string, userAlias: string): Promise<number> {
     await this.authorizationService.authorize(token);
 
     const followeeCount = await this.userDao.getFolloweeCount(userAlias);
@@ -71,7 +71,7 @@ export class FollowService implements Service {
     return followeeCount;
   }
 
-  async getFollowerCount(token: string, userAlias: string): Promise<number> {
+  public async getFollowerCount(token: string, userAlias: string): Promise<number> {
     await this.authorizationService.authorize(token);
 
     const followerCount = await this.userDao.getFollowerCount(userAlias);
@@ -79,7 +79,7 @@ export class FollowService implements Service {
     return followerCount;
   }
 
-  async follow(
+  public async follow(
     token: string,
     userToFollowAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
@@ -88,7 +88,7 @@ export class FollowService implements Service {
     );
   }
 
-  async unfollow(
+  public async unfollow(
     token: string,
     userToUnfollowAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {

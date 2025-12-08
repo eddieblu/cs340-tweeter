@@ -9,7 +9,7 @@ export class StatusService implements Service {
   private readonly followDao = DaoFactoryProvider.getFactory().getFollowDao();
   private readonly authorizationService = new AuthorizationService();
 
-  async loadMoreStoryItems(
+  public async loadMoreStoryItems(
     token: string,
     userAlias: string,
     pageSize: number,
@@ -31,7 +31,7 @@ export class StatusService implements Service {
     return [dtos, hasMore];
   }
 
-  async loadMoreFeedItems(
+  public async loadMoreFeedItems(
     token: string,
     userAlias: string,
     pageSize: number,
@@ -53,7 +53,10 @@ export class StatusService implements Service {
     return [dtos, hasMore];
   }
 
-  async postStatus(token: string, newStatusDto: StatusDto): Promise<void> {
+  public async postStatus(
+    token: string,
+    newStatusDto: StatusDto
+  ): Promise<void> {
     const authorAlias = await this.authorizationService.authorize(token);
 
     const status = Status.fromDto(newStatusDto);

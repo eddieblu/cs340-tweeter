@@ -12,7 +12,7 @@ export class UserService implements Service {
   private readonly s3Dao = DaoFactoryProvider.getFactory().getS3Dao();
   private readonly authorizationService = new AuthorizationService();
 
-  async getUser(token: string, userAlias: string): Promise<UserDto> {
+  public async getUser(token: string, userAlias: string): Promise<UserDto> {
     await this.authorizationService.authorize(token);
 
     const user = await this.userDao.getUser(userAlias);
@@ -22,7 +22,7 @@ export class UserService implements Service {
     return user.dto;
   }
 
-  async login(
+  public async login(
     alias: string,
     password: string
   ): Promise<[UserDto, AuthTokenDto]> {
@@ -46,7 +46,7 @@ export class UserService implements Service {
     return [user.dto, authToken.dto];
   }
 
-  async register(
+  public async register(
     firstName: string,
     lastName: string,
     alias: string,
@@ -75,7 +75,7 @@ export class UserService implements Service {
     return [newUser.dto, authToken.dto];
   }
 
-  async logout(authToken: string): Promise<void> {
+  public async logout(authToken: string): Promise<void> {
     await this.authorizationService.authorize(authToken);
     await this.authTokenDao.deleteAuthToken(authToken);
   }
